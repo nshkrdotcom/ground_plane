@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">GroundPlane logo</title>
+  <desc id="desc">A symmetric hexagonal infrastructure emblem with layered grid geometry and a grounded core.</desc>
+  <defs>
+    <linearGradient id="gpShell" x1="30" y1="24" x2="170" y2="176" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7BE495"/>
+      <stop offset="0.52" stop-color="#29B6A6"/>
+      <stop offset="1" stop-color="#2E6FFF"/>
+    </linearGradient>
+    <linearGradient id="gpTrace" x1="52" y1="44" x2="148" y2="156" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E8FFF0"/>
+      <stop offset="1" stop-color="#D7E4FF"/>
+    </linearGradient>
+    <radialGradient id="gpAura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(100 104) rotate(90) scale(74)">
+      <stop offset="0" stop-color="#8EF6D9" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#8EF6D9" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="gpShadow" x="12" y="12" width="176" height="178" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="11" stdDeviation="11" flood-color="#07161A" flood-opacity="0.26"/>
+    </filter>
+    <filter id="gpBloom" x="43" y="37" width="114" height="127" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4.5" result="blur"/>
+      <feBlend in="SourceGraphic" in2="blur" mode="screen"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#gpShadow)">
+    <path d="M100 20L158.89 54V122L100 156L41.11 122V54L100 20Z" fill="url(#gpAura)"/>
+    <path d="M100 24L155.42 56V120L100 152L44.58 120V56L100 24Z" fill="#0B161B" fill-opacity="0.94" stroke="url(#gpShell)" stroke-width="4.6" stroke-linejoin="round"/>
+    <path d="M100 42L140.13 65V111L100 134L59.87 111V65L100 42Z" fill="#101C22" stroke="url(#gpTrace)" stroke-width="3.3" stroke-linejoin="round"/>
+    <path d="M100 58L124.25 72V100L100 114L75.75 100V72L100 58Z" fill="#0D1A1F" stroke="#D9FFF0" stroke-opacity="0.74" stroke-width="2.1" stroke-linejoin="round"/>
+  </g>
+
+  <g filter="url(#gpBloom)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M100 42V152" stroke="url(#gpShell)" stroke-opacity="0.38" stroke-width="1.25"/>
+    <path d="M44.58 56H155.42" stroke="url(#gpShell)" stroke-opacity="0.18" stroke-width="1.1"/>
+    <path d="M52 88H148" stroke="#D9FFF0" stroke-opacity="0.54" stroke-width="1.5"/>
+    <path d="M59.87 65L100 88L140.13 65" stroke="#A9FFE0" stroke-opacity="0.7" stroke-width="1.55"/>
+    <path d="M59.87 111L100 88L140.13 111" stroke="#A9FFE0" stroke-opacity="0.7" stroke-width="1.55"/>
+    <path d="M44.58 120L155.42 56" stroke="url(#gpShell)" stroke-opacity="0.24" stroke-width="1.15"/>
+    <path d="M44.58 56L155.42 120" stroke="url(#gpShell)" stroke-opacity="0.24" stroke-width="1.15"/>
+    <path d="M75.75 72L124.25 100" stroke="#D7E4FF" stroke-opacity="0.76" stroke-width="1.45"/>
+    <path d="M124.25 72L75.75 100" stroke="#D7E4FF" stroke-opacity="0.76" stroke-width="1.45"/>
+    <path d="M87.5 121.6H112.5" stroke="#E8FFF0" stroke-opacity="0.68" stroke-width="1.55"/>
+    <circle cx="100" cy="88" r="10.4" fill="#12232A" stroke="#E8FFF0" stroke-width="2"/>
+    <circle cx="100" cy="88" r="3.6" fill="#7BE495"/>
+    <circle cx="59.87" cy="65" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
+    <circle cx="140.13" cy="65" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
+    <circle cx="59.87" cy="111" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
+    <circle cx="140.13" cy="111" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
+    <circle cx="75.75" cy="72" r="2.4" fill="#7BE495"/>
+    <circle cx="124.25" cy="72" r="2.4" fill="#7BE495"/>
+    <circle cx="75.75" cy="100" r="2.4" fill="#2E6FFF"/>
+    <circle cx="124.25" cy="100" r="2.4" fill="#2E6FFF"/>
+  </g>
+</svg>
