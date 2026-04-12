@@ -13,17 +13,17 @@
 
 # GroundPlane
 
-GroundPlane is the shared lower infrastructure monorepo for the nshkr platform core.
+GroundPlane is the shared lower infrastructure workspace for the nshkr platform
+core.
 
-The repository is intentionally generic at this stage. It exists to hold the common lower-layer building blocks that should be reused across `outer_brain`, Citadel, `jido_integration`, and app-facing composition surfaces without forcing those repos to re-invent ids, leases, projection glue, or Postgres runtime helpers independently.
+It holds the reusable lower primitives that sit underneath `outer_brain`,
+Citadel, `jido_integration`, and `app_kit`.
 
 ## Scope
 
-- shared contracts
-- Postgres durability helpers
-- projection publication helpers
-- lease and fence primitives
-- replay-safe lower infrastructure
+- shared contracts and state vocabulary
+- Postgres transaction, outbox, inbox, and checkpoint helpers
+- generic projection publication helpers
 
 ## Internal Libraries
 
@@ -33,24 +33,22 @@ The repository is intentionally generic at this stage. It exists to hold the com
 
 ## Status
 
-Starter repository. The exact internal package boundaries will tighten as the first real consumers land.
+Workspace root established. The internal packages are intentionally small and
+generic.
 
 ## Development
 
-The project targets Elixir `~> 1.19` and Erlang/OTP `28`. The pinned toolchain lives in [`.tool-versions`](./.tool-versions).
+The project targets Elixir `~> 1.19` and Erlang/OTP `28`.
 
 ```bash
-mix deps.get
-mix test
+mix ci
 ```
 
 ## Documentation
 
-- [docs/overview.md](./docs/overview.md)
-- [docs/internal_libraries.md](./docs/internal_libraries.md)
-- [docs/integration_boundaries.md](./docs/integration_boundaries.md)
-- [CHANGELOG.md](./CHANGELOG.md)
+Workspace docs cover the overview, layout, contracts, Postgres helpers, and
+projection helpers.
 
 ## License
 
-MIT. Copyright (c) 2026 nshkrdotcom. See [LICENSE](./LICENSE).
+MIT. Copyright (c) 2026 nshkrdotcom.

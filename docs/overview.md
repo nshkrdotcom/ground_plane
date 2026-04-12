@@ -1,12 +1,22 @@
 # Overview
 
-GroundPlane is the starter home for the shared lower infrastructure layer.
+GroundPlane is the shared lower infrastructure layer for the platform core.
 
-The repository is expected to hold:
+It exists to keep lower reusable primitives out of higher runtime repos.
 
-- shared contracts and replay vocabulary
-- Postgres durability helpers
-- projection publication helpers
-- lease and fence utilities
+The repo owns:
 
-The exact internal layout is intentionally still light.
+- replay-safe ids
+- shared handoff-state vocabulary
+- lease and fence structs
+- checkpoint vocabulary
+- generic Postgres helper modules
+- generic projection publication helpers
+
+The repo does not own:
+
+- semantic journals
+- policy truth
+- run and attempt truth
+- operator or governed-run semantics
+- product trust or review logic
