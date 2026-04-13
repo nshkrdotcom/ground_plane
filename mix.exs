@@ -47,7 +47,7 @@ defmodule GroundPlane.Workspace.MixProject do
   defp deps do
     [
       {:blitz, "~> 0.2.0", runtime: false},
-      {:weld, "~> 0.5.0", runtime: false},
+      {:weld, "~> 0.7.0", runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40.1", only: :dev, runtime: false}
@@ -70,6 +70,18 @@ defmodule GroundPlane.Workspace.MixProject do
       "weld.graph": ["weld.graph build_support/weld.exs --artifact ground_plane_contracts"],
       "weld.project": ["weld.project build_support/weld.exs --artifact ground_plane_contracts"],
       "weld.verify": ["weld.verify build_support/weld.exs --artifact ground_plane_contracts"],
+      "weld.release.prepare": [
+        "weld.release.prepare build_support/weld.exs --artifact ground_plane_contracts"
+      ],
+      "weld.release.track": [
+        "weld.release.track build_support/weld.exs --artifact ground_plane_contracts"
+      ],
+      "weld.release.archive": [
+        "weld.release.archive build_support/weld.exs --artifact ground_plane_contracts"
+      ],
+      "release.prepare": ["weld.release.prepare"],
+      "release.track": ["weld.release.track"],
+      "release.archive": ["weld.release.archive"],
       ci: [
         "deps.get",
         "monorepo.deps.get",

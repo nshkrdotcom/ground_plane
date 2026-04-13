@@ -44,6 +44,19 @@ The project targets Elixir `~> 1.19` and Erlang/OTP `28`.
 mix ci
 ```
 
+The welded `ground_plane_contracts` artifact is tracked through the prepared
+bundle flow:
+
+```bash
+mix release.prepare
+mix release.track
+mix release.archive
+```
+
+`mix release.track` updates the orphan-backed
+`projection/ground_plane_contracts` branch so downstream repos can pin a real
+generated-source ref before any formal release boundary exists.
+
 ## Documentation
 
 Workspace docs cover the overview, layout, contracts, Postgres helpers, and
