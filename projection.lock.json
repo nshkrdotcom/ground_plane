@@ -1,0 +1,152 @@
+{
+  "projection": {
+    "build_path": "/home/home/p/g/n/ground_plane/dist/hex/ground_plane_contracts",
+    "copied_files": [
+      ".formatter.exs",
+      "/home/home/p/g/n/ground_plane/dist/hex/ground_plane_contracts/components/core/ground_plane_contracts/lib/ground_plane/contracts/checkpoint.ex",
+      "/home/home/p/g/n/ground_plane/dist/hex/ground_plane_contracts/components/core/ground_plane_contracts/lib/ground_plane/contracts/fence.ex",
+      "/home/home/p/g/n/ground_plane/dist/hex/ground_plane_contracts/components/core/ground_plane_contracts/lib/ground_plane/contracts/handoff_state.ex",
+      "/home/home/p/g/n/ground_plane/dist/hex/ground_plane_contracts/components/core/ground_plane_contracts/lib/ground_plane/contracts/id.ex",
+      "/home/home/p/g/n/ground_plane/dist/hex/ground_plane_contracts/components/core/ground_plane_contracts/lib/ground_plane/contracts/lease.ex",
+      "CHANGELOG.md",
+      "LICENSE",
+      "README.md",
+      "config/config.exs",
+      "config/dev.exs",
+      "config/prod.exs",
+      "config/test.exs",
+      "docs/contracts.md",
+      "docs/overview.md",
+      "docs/postgres_helpers.md",
+      "docs/projection.md",
+      "test/projected_contracts_test.exs",
+      "test/test_helper.exs"
+    ],
+    "package_files": [
+      ".formatter.exs",
+      "CHANGELOG.md",
+      "LICENSE",
+      "README.md",
+      "components/core/ground_plane_contracts",
+      "config",
+      "docs/contracts.md",
+      "docs/overview.md",
+      "docs/postgres_helpers.md",
+      "docs/projection.md",
+      "mix.exs",
+      "projection.lock.json"
+    ],
+    "git_revision": "121c28df496b5c4318d868ad08f15b308cf1286a",
+    "tree_digest": "20a7e6b9180c02b8bf3771c14c0df44c9c7b26560f2cc355f83890198a7f794a"
+  },
+  "manifest": {
+    "path": "/home/home/p/g/n/ground_plane/build_support/weld.exs",
+    "digest": "5fc0e5292806322c1de3f938ac51a67b5d73b64df7b223afa92324422356aa4e"
+  },
+  "artifact": {
+    "id": "ground_plane_contracts",
+    "package": {
+      "name": "ground_plane_contracts",
+      "version": "0.1.0",
+      "otp_app": "ground_plane_contracts"
+    }
+  },
+  "workspace": {
+    "root": "/home/home/p/g/n/ground_plane",
+    "discovery": {
+      "source": "manifest",
+      "project_ids": [
+        ".",
+        "core/ground_plane_contracts",
+        "core/ground_plane_postgres",
+        "core/ground_plane_projection",
+        "examples/projection_smoke"
+      ],
+      "adapter": null,
+      "globs": [
+        ".",
+        "core/*",
+        "examples/*"
+      ],
+      "root_project?": true
+    },
+    "project_count": 5
+  },
+  "graph": {
+    "edges": [
+      {
+        "kind": "runtime",
+        "app": "ground_plane_contracts",
+        "to": "core/ground_plane_contracts",
+        "requirement": null,
+        "from": "core/ground_plane_postgres"
+      },
+      {
+        "kind": "runtime",
+        "app": "ground_plane_contracts",
+        "to": "core/ground_plane_contracts",
+        "requirement": null,
+        "from": "core/ground_plane_projection"
+      },
+      {
+        "kind": "runtime",
+        "app": "ground_plane_projection",
+        "to": "core/ground_plane_projection",
+        "requirement": null,
+        "from": "examples/projection_smoke"
+      }
+    ],
+    "digest": "1a74ef5953d27c05d8fe16fbbfbd74ecad357bcf4e7d398fe73613d05b1205ef",
+    "excluded_projects": [
+      ".",
+      "core/ground_plane_postgres",
+      "core/ground_plane_projection",
+      "examples/projection_smoke"
+    ],
+    "selected_projects": [
+      "core/ground_plane_contracts"
+    ],
+    "violations": []
+  },
+  "verification": [
+    {
+      "env": "dev",
+      "status": "ok",
+      "task": "deps.get"
+    },
+    {
+      "env": "dev",
+      "status": "ok",
+      "task": "deps.compile"
+    },
+    {
+      "env": "dev",
+      "status": "ok",
+      "task": "compile --warnings-as-errors --no-compile-deps"
+    },
+    {
+      "env": "test",
+      "status": "ok",
+      "task": "test",
+      "failure_count": 0,
+      "test_count": 1
+    },
+    {
+      "env": "dev",
+      "status": "ok",
+      "task": "docs --warnings-as-errors"
+    },
+    {
+      "env": "dev",
+      "reason": "artifact_opted_out",
+      "status": "skipped",
+      "task": "hex.build"
+    },
+    {
+      "env": "dev",
+      "reason": "hex_build_disabled",
+      "status": "skipped",
+      "task": "hex.publish --dry-run --yes"
+    }
+  ]
+}

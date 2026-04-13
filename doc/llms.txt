@@ -1,0 +1,24 @@
+# ground_plane_contracts v0.1.0 - Table of Contents
+
+Shared lower contract package projected from the GroundPlane workspace
+
+## Pages
+
+- [README](readme.md)
+- [Contracts](contracts.md)
+- [Overview](overview.md)
+- [Postgres Helpers](postgres_helpers.md)
+- [Projection](projection.md)
+
+## Modules
+
+- [GroundPlane.Contracts.Checkpoint](GroundPlane.Contracts.Checkpoint.md): Shared checkpoint vocabulary for replay and projection positions.
+
+- [GroundPlane.Contracts.Fence](GroundPlane.Contracts.Fence.md): Struct and comparison helpers for fenced ownership.
+
+- [GroundPlane.Contracts.HandoffState](GroundPlane.Contracts.HandoffState.md): Shared handoff lifecycle vocabulary.
+
+- [GroundPlane.Contracts.Id](GroundPlane.Contracts.Id.md): Helpers for replay-safe identifier construction.
+
+- [GroundPlane.Contracts.Lease](GroundPlane.Contracts.Lease.md): Struct and validation helpers for lease records.
+
