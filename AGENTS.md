@@ -1,3 +1,11 @@
+# Monorepo Project Map
+
+- `./core/ground_plane_contracts/mix.exs`: Pure shared lower contracts for the GroundPlane workspace
+- `./core/ground_plane_postgres/mix.exs`: Generic lower Postgres helpers for the GroundPlane workspace
+- `./core/ground_plane_projection/mix.exs`: Generic lower projection helpers for the GroundPlane workspace
+- `./examples/projection_smoke/mix.exs`: Smoke example for the GroundPlane workspace
+- `./mix.exs`: Workspace root for the GroundPlane lower infrastructure monorepo
+
 # AGENTS.md
 
 ## Temporal developer environment
