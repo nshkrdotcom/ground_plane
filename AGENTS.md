@@ -24,3 +24,44 @@ just temporal-ui
 ```
 
 Do not invent raw `temporal server start-dev` commands for normal work. Do not reset local Temporal state unless the user explicitly approves `just temporal-reset-confirm`.
+
+<!-- gn-ten:repo-agent:start repo=ground_plane source_sha=ab276c0640772b73065ab12bf05d77be51f1bb67 -->
+# ground_plane Agent Instructions Draft
+
+## Owns
+
+- Universal lower primitives.
+- IDs and refs.
+- Fences and leases.
+- Checkpoints.
+- Generic persistence and projection helpers.
+
+## Does Not Own
+
+- AI semantics.
+- Provider names.
+- Product names.
+- Governance policy.
+- Execution lane behavior.
+- Workflow state machines.
+
+## Allowed Dependencies
+
+- Standard library and minimal generic dependencies required for primitives.
+
+## Forbidden Imports
+
+- Any ranked repo above GroundPlane.
+- Provider SDKs.
+- Product packages.
+
+## Verification
+
+- `mix ci`
+- Focused tests in `core/ground_plane_contracts` for new primitives.
+
+## Escalation
+
+Promote a primitive only when it is truly universal and can be named without
+referencing a product, provider, or mechanism.
+<!-- gn-ten:repo-agent:end -->
