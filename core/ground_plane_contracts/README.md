@@ -1,4 +1,4 @@
 # GroundPlane Contracts
 
-Pure shared lower contract helpers for ids, handoff states, leases, fences, and
-checkpoints.
+Pure shared lower contract helpers for ids, repository refs, handoff states,
+leases, fences, and checkpoints.
