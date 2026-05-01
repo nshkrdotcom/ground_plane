@@ -102,13 +102,13 @@ defmodule GroundPlane.Workspace.MixProject do
         env: "GROUND_PLANE_MONOREPO_MAX_CONCURRENCY",
         multiplier: :auto,
         base: [
-          deps_get: 3,
+          deps_get: 4,
           format: 4,
-          compile: 2,
-          test: 2,
+          compile: 4,
+          test: 4,
           credo: 2,
-          dialyzer: 1,
-          docs: 1
+          dialyzer: 4,
+          docs: 4
         ],
         overrides: []
       ],
