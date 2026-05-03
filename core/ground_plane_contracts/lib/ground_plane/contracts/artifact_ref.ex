@@ -7,8 +7,7 @@ defmodule GroundPlane.Contracts.ArtifactRef do
   provider, product, or workflow semantics.
   """
 
-  @ref_pattern ~r/^artifact:\/\/[a-z0-9][a-z0-9_-]*\/[A-Za-z0-9][A-Za-z0-9_-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*$/
-  @segment_pattern ~r/^[A-Za-z0-9][A-Za-z0-9_.-]*$/
+  alias GroundPlane.Contracts.Segment
 
   @enforce_keys [:owner, :repo, :name, :ref]
   defstruct [:owner, :repo, :name, :ref]
@@ -61,7 +60,13 @@ defmodule GroundPlane.Contracts.ArtifactRef do
   end
 
   @spec valid?(term()) :: boolean()
-  def valid?(value) when is_binary(value), do: String.match?(value, @ref_pattern)
+  def valid?(value) when is_binary(value) do
+    case parse(value) do
+      {:ok, _artifact_ref} -> true
+      {:error, _reason} -> false
+    end
+  end
+
   def valid?(_value), do: false
 
   @spec parse(String.t()) :: {:ok, t()} | {:error, term()}
@@ -108,10 +113,14 @@ defmodule GroundPlane.Contracts.ArtifactRef do
   end
 
   defp validate_segment(field, value) do
-    if String.match?(value, @segment_pattern) do
+    if valid_segment?(field, value) do
       :ok
     else
       {:error, {:invalid_segment, field}}
     end
   end
+
+  defp valid_segment?(:owner, value), do: Segment.owner?(value)
+  defp valid_segment?(:repo, value), do: Segment.name?(value)
+  defp valid_segment?(:name, value), do: Segment.artifact_name?(value)
 end

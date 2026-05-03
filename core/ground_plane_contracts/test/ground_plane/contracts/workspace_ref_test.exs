@@ -29,9 +29,11 @@ defmodule GroundPlane.Contracts.WorkspaceRefTest do
   test "rejects invalid refs and segments" do
     refute WorkspaceRef.valid?("workspace://bad owner/gn-ten")
     refute WorkspaceRef.valid?("workspace://nshkrdotcom/gn ten")
+    refute WorkspaceRef.valid?("workspace://nshkrdotcom/gn.ten")
     refute WorkspaceRef.valid?("workspace://nshkrdotcom")
 
     assert {:error, {:invalid_segment, :name}} = WorkspaceRef.new("nshkrdotcom", "bad/name")
+    assert {:error, {:invalid_segment, :name}} = WorkspaceRef.new("nshkrdotcom", "bad.name")
     assert {:error, :invalid_workspace_ref} = WorkspaceRef.parse("repo://nshkrdotcom/gn-ten")
   end
 end

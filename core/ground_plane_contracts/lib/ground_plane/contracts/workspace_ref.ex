@@ -7,8 +7,7 @@ defmodule GroundPlane.Contracts.WorkspaceRef do
   semantics, provider payloads, or runtime execution details.
   """
 
-  @ref_pattern ~r/^workspace:\/\/[a-z0-9][a-z0-9_-]*\/[A-Za-z0-9][A-Za-z0-9_-]*$/
-  @segment_pattern ~r/^[A-Za-z0-9][A-Za-z0-9_-]*$/
+  alias GroundPlane.Contracts.Segment
 
   @enforce_keys [:owner, :name, :ref]
   defstruct [:owner, :name, :ref]
@@ -56,7 +55,13 @@ defmodule GroundPlane.Contracts.WorkspaceRef do
   end
 
   @spec valid?(term()) :: boolean()
-  def valid?(value) when is_binary(value), do: String.match?(value, @ref_pattern)
+  def valid?(value) when is_binary(value) do
+    case parse(value) do
+      {:ok, _workspace_ref} -> true
+      {:error, _reason} -> false
+    end
+  end
+
   def valid?(_value), do: false
 
   @spec parse(String.t()) :: {:ok, t()} | {:error, term()}
@@ -103,10 +108,13 @@ defmodule GroundPlane.Contracts.WorkspaceRef do
   end
 
   defp validate_segment(field, value) do
-    if String.match?(value, @segment_pattern) do
+    if valid_segment?(field, value) do
       :ok
     else
       {:error, {:invalid_segment, field}}
     end
   end
+
+  defp valid_segment?(:owner, value), do: Segment.owner?(value)
+  defp valid_segment?(:name, value), do: Segment.name?(value)
 end

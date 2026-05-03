@@ -3,7 +3,7 @@ defmodule GroundPlane.Contracts.Id do
   Helpers for replay-safe identifier construction.
   """
 
-  @id_pattern ~r/^[a-z0-9]+(?:_[a-z0-9]+)+$/
+  alias GroundPlane.Contracts.Segment
 
   @spec build(String.t(), String.t()) :: String.t()
   def build(prefix, suffix) when is_binary(prefix) and is_binary(suffix) do
@@ -21,7 +21,7 @@ defmodule GroundPlane.Contracts.Id do
 
   @spec valid?(term()) :: boolean()
   def valid?(value) when is_binary(value) do
-    String.match?(value, @id_pattern)
+    Segment.id?(value)
   end
 
   def valid?(_value), do: false
@@ -33,9 +33,6 @@ defmodule GroundPlane.Contracts.Id do
   end
 
   defp normalize_segment(segment) do
-    segment
-    |> String.downcase()
-    |> String.replace(~r/[^a-z0-9]+/, "_")
-    |> String.trim("_")
+    Segment.normalize_id_segment(segment)
   end
 end

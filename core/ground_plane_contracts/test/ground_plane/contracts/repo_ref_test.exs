@@ -23,7 +23,9 @@ defmodule GroundPlane.Contracts.RepoRefTest do
 
   test "rejects invalid refs and segments" do
     refute RepoRef.valid?("repo://bad owner/app kit")
+    refute RepoRef.valid?("repo://nshkrdotcom/app.kit")
     assert {:error, {:invalid_segment, :name}} = RepoRef.new("nshkrdotcom", "app kit")
+    assert {:error, {:invalid_segment, :name}} = RepoRef.new("nshkrdotcom", "app.kit")
     assert {:error, :invalid_repo_ref} = RepoRef.parse("project://nshkrdotcom/app_kit")
   end
 end

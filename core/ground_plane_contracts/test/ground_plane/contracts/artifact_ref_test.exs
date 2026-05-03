@@ -32,6 +32,17 @@ defmodule GroundPlane.Contracts.ArtifactRefTest do
     refute ArtifactRef.valid?("artifact://bad owner/stack_lab/manifest")
     refute ArtifactRef.valid?("artifact://nshkrdotcom/stack lab/manifest")
     refute ArtifactRef.valid?("artifact://nshkrdotcom/stack_lab")
+    refute ArtifactRef.valid?("artifact://nshkr.dot/stack_lab/manifest")
+    refute ArtifactRef.valid?("artifact://nshkrdotcom/stack.lab/manifest")
+
+    assert {:ok, artifact_ref} = ArtifactRef.new("nshkrdotcom", "stack_lab", "manifest.v1")
+    assert artifact_ref.ref == "artifact://nshkrdotcom/stack_lab/manifest.v1"
+
+    assert {:error, {:invalid_segment, :owner}} =
+             ArtifactRef.new("nshkr.dot", "stack_lab", "manifest")
+
+    assert {:error, {:invalid_segment, :repo}} =
+             ArtifactRef.new("nshkrdotcom", "stack.lab", "manifest")
 
     assert {:error, {:invalid_segment, :name}} =
              ArtifactRef.new("nshkrdotcom", "stack_lab", "bad/name")
