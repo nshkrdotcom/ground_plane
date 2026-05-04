@@ -166,6 +166,104 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
     )
   end
 
+  test "credential lease scope rejects mismatched provider, operation, target, policy, rotation, and fence" do
+    now = DateTime.from_unix!(1_700_000_000)
+
+    assert {:ok, lease} = Lease.new(credential_lease_attrs(now))
+    fence = Fence.from_lease(lease)
+
+    assert {:ok, evidence} =
+             Fence.authorize_credential_materialization(
+               lease,
+               fence,
+               credential_context(%{}),
+               now
+             )
+
+    assert evidence.provider_family == "codex"
+    refute Map.has_key?(evidence, :payload)
+
+    assert {:error, {:provider_account_mismatch, _details}} =
+             Fence.authorize_credential_materialization(
+               lease,
+               fence,
+               credential_context(%{provider_account_ref: "provider-account://tenant-1/codex/b"}),
+               now
+             )
+
+    assert {:error, {:operation_class_mismatch, _details}} =
+             Fence.authorize_credential_materialization(
+               lease,
+               fence,
+               credential_context(%{operation_class: "http"}),
+               now
+             )
+
+    assert {:error, {:stale_policy_revision, _details}} =
+             Fence.authorize_credential_materialization(
+               lease,
+               fence,
+               credential_context(%{policy_revision_ref: "policy-revision://tenant-1/codex/2"}),
+               now
+             )
+
+    assert {:error, {:rotation_epoch_mismatch, _details}} =
+             Fence.authorize_credential_materialization(
+               lease,
+               fence,
+               credential_context(%{rotation_epoch: 2}),
+               now
+             )
+
+    assert {:error, {:stale_target_grant, _details}} =
+             Fence.authorize_credential_materialization(
+               lease,
+               fence,
+               credential_context(%{
+                 target_grant_revision: "target-grant-revision://tenant-1/sandbox/2"
+               }),
+               now
+             )
+
+    assert {:error, {:fence_token_mismatch, _details}} =
+             Fence.authorize_credential_materialization(
+               lease,
+               %Fence{fence | fence_token: "fence://tenant-1/codex/a/2"},
+               credential_context(%{}),
+               now
+             )
+  end
+
+  test "credential lease cleanup emits terminal redacted evidence only" do
+    now = DateTime.from_unix!(1_700_000_000)
+    expired_at = DateTime.add(now, -1, :second)
+
+    assert {:ok, expired_lease} =
+             credential_lease_attrs(now)
+             |> Map.put(:expires_at, expired_at)
+             |> Lease.new()
+
+    assert {:ok, cleanup} =
+             Lease.cleanup_event(expired_lease, %{
+               cleanup_ref: "cleanup://tenant-1/codex/lease-1",
+               cleaned_at: now
+             })
+
+    assert cleanup.status == :cleaned
+    assert cleanup.credential_lease_ref == "credential-lease://tenant-1/codex/a/1"
+    refute Map.has_key?(cleanup, :payload)
+
+    assert {:error, :active_lease_cleanup_rejected} =
+             credential_lease_attrs(now)
+             |> Lease.new()
+             |> then(fn {:ok, active_lease} ->
+               Lease.cleanup_event(active_lease, %{
+                 cleanup_ref: "cleanup://tenant-1/codex/lease-active",
+                 cleaned_at: now
+               })
+             end)
+  end
+
   test "ambient tenant env cannot fill lower tenant-scoped refs" do
     with_env(%{"GROUND_PLANE_TENANT_ID" => "tenant-from-env"}, fn ->
       assert {:error, {:missing_required_fields, [:tenant_id]}} =
@@ -183,6 +281,52 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
                  trace_id: "trace-109"
                })
     end)
+  end
+
+  defp credential_lease_attrs(now) do
+    %{
+      resource: "credential:codex:tenant-1:account-a",
+      holder: "materializer-a",
+      lease_id: "lease_active",
+      epoch: 4,
+      expires_at: DateTime.add(now, 30, :second),
+      tenant_id: "tenant-1",
+      subject_ref: "subject://tenant-1/codex/user-a",
+      provider_family: "codex",
+      provider_account_ref: "provider-account://tenant-1/codex/account-a",
+      connector_instance_ref: "connector-instance://tenant-1/codex/a",
+      credential_handle_ref: "credential-handle://tenant-1/codex/account-a",
+      credential_lease_ref: "credential-lease://tenant-1/codex/a/1",
+      operation_class: "cli",
+      target_ref: "target://tenant-1/sandbox/a",
+      attach_grant_ref: "attach-grant://tenant-1/sandbox/a",
+      operation_policy_ref: "operation-policy://tenant-1/codex/run",
+      policy_revision_ref: "policy-revision://tenant-1/codex/1",
+      target_grant_revision: "target-grant-revision://tenant-1/sandbox/1",
+      rotation_epoch: 1,
+      fence_token: "fence://tenant-1/codex/a/1"
+    }
+  end
+
+  defp credential_context(attrs) do
+    Map.merge(
+      %{
+        tenant_id: "tenant-1",
+        provider_family: "codex",
+        provider_account_ref: "provider-account://tenant-1/codex/account-a",
+        connector_instance_ref: "connector-instance://tenant-1/codex/a",
+        credential_handle_ref: "credential-handle://tenant-1/codex/account-a",
+        operation_class: "cli",
+        target_ref: "target://tenant-1/sandbox/a",
+        attach_grant_ref: "attach-grant://tenant-1/sandbox/a",
+        operation_policy_ref: "operation-policy://tenant-1/codex/run",
+        policy_revision_ref: "policy-revision://tenant-1/codex/1",
+        target_grant_revision: "target-grant-revision://tenant-1/sandbox/1",
+        rotation_epoch: 1,
+        fence_token: "fence://tenant-1/codex/a/1"
+      },
+      attrs
+    )
   end
 
   defp with_env(vars, fun) when is_map(vars) and is_function(fun, 0) do
