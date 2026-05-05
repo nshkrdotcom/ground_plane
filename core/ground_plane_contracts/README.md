@@ -3,6 +3,13 @@
 Pure shared lower contract helpers for ids, repository refs, artifact refs,
 handoff states, leases, fences, and checkpoints.
 
+Phase 14 restart authorization is owned here. `GroundPlane.Contracts.Fence`
+checks revoked credentials, expired leases, stale installation revisions,
+stale target grants, rotated handle epochs, duplicate active executions,
+old credential lease materialization, delayed retry, target detach, sandbox
+restart, process crash, stream reconnect, and workflow resume before any
+credential materialization can be reused.
+
 ## Canonical References
 
 - `GroundPlane.Contracts.RepoRef` owns canonical

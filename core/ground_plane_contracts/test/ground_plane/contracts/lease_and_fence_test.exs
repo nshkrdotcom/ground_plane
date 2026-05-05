@@ -207,6 +207,16 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
                now
              )
 
+    assert {:error, {:stale_installation_revision, _details}} =
+             Fence.authorize_credential_materialization(
+               lease,
+               fence,
+               credential_context(%{
+                 installation_revision_ref: "installation-revision://tenant-1/app/2"
+               }),
+               now
+             )
+
     assert {:error, {:rotation_epoch_mismatch, _details}} =
              Fence.authorize_credential_materialization(
                lease,
@@ -232,6 +242,88 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
                credential_context(%{}),
                now
              )
+  end
+
+  test "retry dispatch revalidates lease, target, idempotency, and materialization state" do
+    now = DateTime.from_unix!(1_700_000_000)
+
+    assert {:ok, lease} = Lease.new(credential_lease_attrs(now))
+    fence = Fence.from_lease(lease)
+
+    assert {:ok, retry} =
+             Fence.authorize_retry_dispatch(
+               lease,
+               fence,
+               retry_context(%{}),
+               now
+             )
+
+    assert retry.retry_dispatch_status == :authorized_revalidated
+    assert retry.idempotency_key == "idem://tenant-1/codex/retry-1"
+    assert retry.active_execution_ref == "execution://tenant-1/codex/active-1"
+    assert retry.restart_event == :workflow_resume
+    refute Map.has_key?(retry, :payload)
+
+    assert {:error, {:duplicate_active_execution_after_restart, _details}} =
+             Fence.authorize_retry_dispatch(
+               lease,
+               fence,
+               retry_context(%{current_execution_ref: "execution://tenant-1/codex/other"}),
+               now
+             )
+
+    assert {:error, {:stale_materialization_epoch_after_restart, _details}} =
+             Fence.authorize_retry_dispatch(
+               lease,
+               fence,
+               retry_context(%{materialization_epoch: 0}),
+               now
+             )
+
+    assert {:error, {:duplicate_dispatch_old_lease_reuse, _details}} =
+             Fence.authorize_retry_dispatch(
+               lease,
+               fence,
+               retry_context(%{
+                 materialized_credential_lease_ref: "credential-lease://tenant-1/codex/old"
+               }),
+               now
+             )
+  end
+
+  test "restart event lanes revalidate or fail closed before materialized credential reuse" do
+    now = DateTime.from_unix!(1_700_000_000)
+
+    assert {:ok, lease} = Lease.new(credential_lease_attrs(now))
+    fence = Fence.from_lease(lease)
+
+    for event <- [
+          :target_detach,
+          :sandbox_restart,
+          :process_crash,
+          :stream_reconnect,
+          :workflow_resume
+        ] do
+      assert {:ok, result} =
+               Fence.authorize_retry_dispatch(
+                 lease,
+                 fence,
+                 retry_context(%{restart_event: event}),
+                 now
+               )
+
+      assert result.restart_event == event
+    end
+
+    assert {:error, {:unsupported_restart_revalidation_event, details}} =
+             Fence.authorize_retry_dispatch(
+               lease,
+               fence,
+               retry_context(%{restart_event: :dump_previous_token}),
+               now
+             )
+
+    assert details.restart_event == :dump_previous_token
   end
 
   test "credential lease cleanup emits terminal redacted evidence only" do
@@ -301,6 +393,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
       target_ref: "target://tenant-1/sandbox/a",
       attach_grant_ref: "attach-grant://tenant-1/sandbox/a",
       operation_policy_ref: "operation-policy://tenant-1/codex/run",
+      installation_revision_ref: "installation-revision://tenant-1/app/1",
       policy_revision_ref: "policy-revision://tenant-1/codex/1",
       target_grant_revision: "target-grant-revision://tenant-1/sandbox/1",
       rotation_epoch: 1,
@@ -320,11 +413,28 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
         target_ref: "target://tenant-1/sandbox/a",
         attach_grant_ref: "attach-grant://tenant-1/sandbox/a",
         operation_policy_ref: "operation-policy://tenant-1/codex/run",
+        installation_revision_ref: "installation-revision://tenant-1/app/1",
         policy_revision_ref: "policy-revision://tenant-1/codex/1",
         target_grant_revision: "target-grant-revision://tenant-1/sandbox/1",
         rotation_epoch: 1,
         fence_token: "fence://tenant-1/codex/a/1"
       },
+      attrs
+    )
+  end
+
+  defp retry_context(attrs) do
+    Map.merge(
+      credential_context(%{
+        idempotency_key: "idem://tenant-1/codex/retry-1",
+        dispatch_ref: "dispatch://tenant-1/codex/retry-1",
+        active_execution_ref: "execution://tenant-1/codex/active-1",
+        current_execution_ref: "execution://tenant-1/codex/active-1",
+        retry_authority_ref: "retry-authority://tenant-1/codex/retry-1",
+        materialization_epoch: 1,
+        materialized_credential_lease_ref: "credential-lease://tenant-1/codex/a/1",
+        restart_event: :workflow_resume
+      }),
       attrs
     )
   end
