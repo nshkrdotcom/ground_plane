@@ -22,7 +22,7 @@ defmodule GroundPlane.Build.WeldContract do
         proofs: ["examples/projection_smoke"]
       ],
       publication: [
-        internal_only: [".", "examples/projection_smoke"]
+        internal_only: [".", "core/persistence_policy_ai_extension", "examples/projection_smoke"]
       ],
       artifacts: [
         ground_plane_contracts: artifact()
