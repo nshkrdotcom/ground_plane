@@ -28,6 +28,7 @@ Citadel, `jido_integration`, and `app_kit`.
 ## Internal Libraries
 
 - `ground_plane_contracts`
+- `ground_plane_ai_run_fencing`
 - `ground_plane_postgres`
 - `ground_plane_projection`
 

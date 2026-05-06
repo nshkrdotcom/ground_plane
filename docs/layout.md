@@ -7,6 +7,7 @@ The root owns only workspace wiring, docs, and verification.
 Internal packages live in:
 
 - `core/ground_plane_contracts`
+- `core/ai_run_fencing`
 - `core/ground_plane_postgres`
 - `core/ground_plane_projection`
 

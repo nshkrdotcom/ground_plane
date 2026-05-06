@@ -2,6 +2,7 @@ defmodule GroundPlane.Build.WorkspaceManifest do
   @moduledoc false
 
   @package_paths [
+    "core/ai_run_fencing",
     "core/ground_plane_contracts",
     "core/persistence_policy_ai_extension",
     "core/ground_plane_postgres",
