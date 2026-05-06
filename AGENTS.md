@@ -70,3 +70,7 @@ Do not invent raw `temporal server start-dev` commands for normal work. Do not r
 Promote a primitive only when it is truly universal and can be named without
 referencing a product, provider, or mechanism.
 <!-- gn-ten:repo-agent:end -->
+
+## Blitz 0.3.0 operational note
+
+Root workspace Blitz uses published Hex `~> 0.3.0` by default; `.blitz/` is committed compact impact state after green QC. Source and `mix.exs` changes cascade through reverse workspace dependencies; docs-only changes should stay owner-local.
