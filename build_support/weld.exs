@@ -25,6 +25,7 @@ defmodule GroundPlane.Build.WeldContract do
         internal_only: [
           ".",
           "core/ai_run_fencing",
+          "core/persistence_policy",
           "core/persistence_policy_ai_extension",
           "examples/projection_smoke"
         ]

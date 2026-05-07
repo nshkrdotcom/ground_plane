@@ -29,8 +29,17 @@ Citadel, `jido_integration`, and `app_kit`.
 
 - `ground_plane_contracts`
 - `ground_plane_ai_run_fencing`
+- `ground_plane_persistence_policy`
+- `ground_plane_persistence_policy_ai_extension`
 - `ground_plane_postgres`
 - `ground_plane_projection`
+
+`ground_plane_persistence_policy` owns the pure profile contract for
+persistence tier selection, debug capture level selection, store capability
+descriptors, partition dimensions, and bounded debug taps. Its built-in default
+profile is `:mickey_mouse`: memory-only, no restart durability claim, no
+Postgres, no Temporal, no object storage, no external network dependency, no
+live provider credential dependency, and no debug sidecar dependency.
 
 ## Status
 
