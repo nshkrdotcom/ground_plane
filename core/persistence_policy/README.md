@@ -56,3 +56,7 @@ mutating tap state, and tap failures return the original tap unchanged.
 Forbidden debug event keys include raw secrets, raw prompts, provider payloads,
 auth headers, API keys, OAuth secrets, token files, credential bodies, native
 auth file content, and unredacted provider account identifiers.
+
+## Persistence Documentation
+
+See `docs/persistence.md` for tiers, defaults, adapters, unsupported selections, config examples, restart claims, durability claims, debug sidecar behavior, redaction guarantees, migration or preflight behavior, and no-bypass scope when applicable.

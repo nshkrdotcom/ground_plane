@@ -6,3 +6,7 @@ helpers.
 
 This package does not depend on databases, Temporal, provider SDKs, object
 stores, vector stores, product repos, or LiveView.
+
+## Persistence Documentation
+
+See `docs/persistence.md` for tiers, defaults, adapters, unsupported selections, config examples, restart claims, durability claims, debug sidecar behavior, redaction guarantees, migration or preflight behavior, and no-bypass scope when applicable.

@@ -11,3 +11,7 @@ Phase 6 receipts now include persistence posture for AI run fences. The default
 profile is memory-only; durable profiles add store/tier/receipt refs to lease,
 epoch, and top-level fence receipts without carrying provider payloads, prompts,
 workflow histories, or product-policy decisions.
+
+## Persistence Documentation
+
+See `docs/persistence.md` for tiers, defaults, adapters, unsupported selections, config examples, restart claims, durability claims, debug sidecar behavior, redaction guarantees, migration or preflight behavior, and no-bypass scope when applicable.

@@ -28,3 +28,7 @@ material, process payloads, or workflow histories.
 
 These references are opaque identifiers. They do not carry product, provider,
 governance, workflow, release, or audit semantics.
+
+## Persistence Documentation
+
+See `docs/persistence.md` for tiers, defaults, adapters, unsupported selections, config examples, restart claims, durability claims, debug sidecar behavior, redaction guarantees, migration or preflight behavior, and no-bypass scope when applicable.
