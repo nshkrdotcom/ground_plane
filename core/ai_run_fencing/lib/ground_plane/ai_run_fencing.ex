@@ -9,6 +9,7 @@ defmodule GroundPlane.AIRunFencing do
   alias GroundPlane.AIRunFencing.ReplayEpoch
   alias GroundPlane.AIRunFencing.RunLock
   alias GroundPlane.AIRunFencing.Validation
+  alias GroundPlane.Contracts.PersistencePosture
 
   @required_refs [:tenant_ref, :ai_run_ref]
 
@@ -31,6 +32,7 @@ defmodule GroundPlane.AIRunFencing do
          ai_run_ref: Validation.fetch_string!(attrs, :ai_run_ref),
          checked_at: now,
          redacted: true,
+         persistence_posture: PersistencePosture.resolve(:ai_run_fence_receipt, attrs),
          fence_receipts: %{
            run_lock: run_lock,
            checkpoint_epoch: checkpoint,

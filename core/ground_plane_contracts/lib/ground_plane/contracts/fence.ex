@@ -4,6 +4,7 @@ defmodule GroundPlane.Contracts.Fence do
   """
 
   alias GroundPlane.Contracts.Lease
+  alias GroundPlane.Contracts.PersistencePosture
 
   defstruct [
     :resource,
@@ -24,7 +25,8 @@ defmodule GroundPlane.Contracts.Fence do
     :policy_revision_ref,
     :target_grant_revision,
     :rotation_epoch,
-    :fence_token
+    :fence_token,
+    :persistence_posture
   ]
 
   @type t :: %__MODULE__{
@@ -46,7 +48,8 @@ defmodule GroundPlane.Contracts.Fence do
           policy_revision_ref: String.t() | nil,
           target_grant_revision: String.t() | nil,
           rotation_epoch: non_neg_integer() | nil,
-          fence_token: String.t() | nil
+          fence_token: String.t() | nil,
+          persistence_posture: map() | nil
         }
 
   @credential_scope_checks [
@@ -103,7 +106,9 @@ defmodule GroundPlane.Contracts.Fence do
       policy_revision_ref: lease.policy_revision_ref,
       target_grant_revision: lease.target_grant_revision,
       rotation_epoch: lease.rotation_epoch,
-      fence_token: lease.fence_token
+      fence_token: lease.fence_token,
+      persistence_posture:
+        lease.persistence_posture || PersistencePosture.memory(:credential_lease_fence)
     }
   end
 
@@ -202,6 +207,29 @@ defmodule GroundPlane.Contracts.Fence do
       revoked_at: lease.revoked_at,
       revocation_ref: lease.revocation_ref
     }
+    |> Map.put(:persistence_posture, lease.persistence_posture || fence.persistence_posture)
+  end
+
+  defp add_persistence_posture(details, %Lease{} = lease, %__MODULE__{} = fence) do
+    Map.put(details, :persistence_posture, lease.persistence_posture || fence.persistence_posture)
+  end
+
+  defp credential_details(%Lease{} = lease, %__MODULE__{} = fence, now, mismatch_field \\ nil) do
+    lease
+    |> Lease.credential_scope()
+    |> Map.merge(%{
+      resource: lease.resource,
+      holder: lease.holder,
+      lease_id: lease.lease_id,
+      lease_epoch: lease.epoch,
+      fence_epoch: fence.epoch,
+      checked_at: now,
+      mismatch_field: mismatch_field,
+      redacted: true
+    })
+    |> add_persistence_posture(lease, fence)
+    |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+    |> Map.new()
   end
 
   defp ensure_scope_matches_fence(%Lease{} = lease, %__MODULE__{} = fence, now) do
@@ -225,23 +253,6 @@ defmodule GroundPlane.Contracts.Fence do
 
       not is_nil(expected) and not is_nil(actual) and expected != actual
     end)
-  end
-
-  defp credential_details(%Lease{} = lease, %__MODULE__{} = fence, now, mismatch_field \\ nil) do
-    lease
-    |> Lease.credential_scope()
-    |> Map.merge(%{
-      resource: lease.resource,
-      holder: lease.holder,
-      lease_id: lease.lease_id,
-      lease_epoch: lease.epoch,
-      fence_epoch: fence.epoch,
-      checked_at: now,
-      mismatch_field: mismatch_field,
-      redacted: true
-    })
-    |> Enum.reject(fn {_key, value} -> is_nil(value) end)
-    |> Map.new()
   end
 
   defp ensure_retry_context(%Lease{} = lease, %__MODULE__{} = fence, context, now) do

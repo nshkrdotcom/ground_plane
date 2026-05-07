@@ -3,6 +3,8 @@ defmodule GroundPlane.Contracts.Lease do
   Struct and validation helpers for lease records.
   """
 
+  alias GroundPlane.Contracts.PersistencePosture
+
   defstruct [
     :resource,
     :holder,
@@ -26,7 +28,8 @@ defmodule GroundPlane.Contracts.Lease do
     :policy_revision_ref,
     :target_grant_revision,
     :rotation_epoch,
-    :fence_token
+    :fence_token,
+    :persistence_posture
   ]
 
   @type t :: %__MODULE__{
@@ -52,7 +55,8 @@ defmodule GroundPlane.Contracts.Lease do
           policy_revision_ref: String.t() | nil,
           target_grant_revision: String.t() | nil,
           rotation_epoch: non_neg_integer() | nil,
-          fence_token: String.t() | nil
+          fence_token: String.t() | nil,
+          persistence_posture: map() | nil
         }
 
   @required_fields [:resource, :holder, :lease_id, :epoch, :expires_at]
@@ -107,7 +111,8 @@ defmodule GroundPlane.Contracts.Lease do
          policy_revision_ref: optional_string(attrs, :policy_revision_ref),
          target_grant_revision: optional_string(attrs, :target_grant_revision),
          rotation_epoch: rotation_epoch,
-         fence_token: optional_string(attrs, :fence_token)
+         fence_token: optional_string(attrs, :fence_token),
+         persistence_posture: PersistencePosture.resolve(:credential_lease_fence, attrs)
        }}
     end
   end
@@ -153,6 +158,7 @@ defmodule GroundPlane.Contracts.Lease do
          credential_lease_ref: lease.credential_lease_ref || lease.lease_id,
          cleanup_ref: cleanup_ref,
          cleaned_at: cleaned_at,
+         persistence_posture: lease.persistence_posture,
          status: :cleaned,
          redacted: true
        })}

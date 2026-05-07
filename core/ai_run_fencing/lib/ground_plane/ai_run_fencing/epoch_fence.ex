@@ -2,6 +2,7 @@ defmodule GroundPlane.AIRunFencing.EpochFence do
   @moduledoc false
 
   alias GroundPlane.AIRunFencing.Validation
+  alias GroundPlane.Contracts.PersistencePosture
 
   @required_refs [:artifact_ref, :epoch_ref]
 
@@ -68,6 +69,7 @@ defmodule GroundPlane.AIRunFencing.EpochFence do
       expected_epoch: expected_epoch,
       observed_epoch: observed_epoch,
       checked_at: now,
+      persistence_posture: PersistencePosture.resolve(:revocation_epoch, attrs),
       redacted: true
     }
   end
@@ -82,6 +84,10 @@ defmodule GroundPlane.AIRunFencing.EpochFence do
       :revocation_ref,
       :fence_family
     ])
-    |> Map.merge(%{checked_at: now, redacted: true})
+    |> Map.merge(%{
+      checked_at: now,
+      persistence_posture: PersistencePosture.resolve(:revocation_epoch, attrs),
+      redacted: true
+    })
   end
 end

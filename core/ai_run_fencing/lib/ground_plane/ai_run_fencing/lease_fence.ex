@@ -2,6 +2,7 @@ defmodule GroundPlane.AIRunFencing.LeaseFence do
   @moduledoc false
 
   alias GroundPlane.AIRunFencing.Validation
+  alias GroundPlane.Contracts.PersistencePosture
 
   @required_refs [:lease_ref, :owner_ref]
 
@@ -64,6 +65,7 @@ defmodule GroundPlane.AIRunFencing.LeaseFence do
       fence_epoch: fence_epoch,
       expires_at: expires_at,
       checked_at: now,
+      persistence_posture: PersistencePosture.resolve(:credential_lease_fence, attrs),
       redacted: true
     }
   end
@@ -78,6 +80,10 @@ defmodule GroundPlane.AIRunFencing.LeaseFence do
       :revocation_ref,
       :fence_family
     ])
-    |> Map.merge(%{checked_at: now, redacted: true})
+    |> Map.merge(%{
+      checked_at: now,
+      persistence_posture: PersistencePosture.resolve(:credential_lease_fence, attrs),
+      redacted: true
+    })
   end
 end

@@ -10,6 +10,13 @@ old credential lease materialization, delayed retry, target detach, sandbox
 restart, process crash, stream reconnect, and workflow resume before any
 credential materialization can be reused.
 
+Phase 6 persistence posture is owned here for lower lease/fence/checkpoint
+evidence. `GroundPlane.Contracts.PersistencePosture` keeps public contracts
+ref-only and memory-by-default while mirroring the shared GroundPlane persistence
+profile names for durable evidence. Leases, fences, restart checkpoints, and
+cleanup/duplicate-dispatch details carry storage refs but never credential
+material, process payloads, or workflow histories.
+
 ## Canonical References
 
 - `GroundPlane.Contracts.RepoRef` owns canonical

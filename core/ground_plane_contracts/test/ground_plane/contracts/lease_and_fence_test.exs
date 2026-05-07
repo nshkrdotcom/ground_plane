@@ -356,6 +356,47 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
              end)
   end
 
+  test "persistence posture changes storage refs without changing fence decisions" do
+    now = DateTime.from_unix!(1_700_000_000)
+
+    assert {:ok, memory_lease} = Lease.new(credential_lease_attrs(now))
+
+    assert {:ok, durable_lease} =
+             credential_lease_attrs(now)
+             |> Map.put(:profile, :integration_postgres)
+             |> Lease.new()
+
+    memory_fence = Fence.from_lease(memory_lease)
+    durable_fence = Fence.from_lease(durable_lease)
+
+    assert memory_lease.persistence_posture.persistence_profile_ref ==
+             "persistence-profile://mickey_mouse"
+
+    assert durable_lease.persistence_posture.persistence_tier_ref ==
+             "persistence-tier://postgres_shared"
+
+    assert {:ok, memory_result} =
+             Fence.authorize_credential_materialization(
+               memory_lease,
+               memory_fence,
+               credential_context(%{}),
+               now
+             )
+
+    assert {:ok, durable_result} =
+             Fence.authorize_credential_materialization(
+               durable_lease,
+               durable_fence,
+               credential_context(%{}),
+               now
+             )
+
+    assert Map.drop(memory_result, [:persistence_posture]) ==
+             Map.drop(durable_result, [:persistence_posture])
+
+    assert durable_result.persistence_posture.durable? == true
+  end
+
   test "ambient tenant env cannot fill lower tenant-scoped refs" do
     with_env(%{"GROUND_PLANE_TENANT_ID" => "tenant-from-env"}, fn ->
       assert {:error, {:missing_required_fields, [:tenant_id]}} =

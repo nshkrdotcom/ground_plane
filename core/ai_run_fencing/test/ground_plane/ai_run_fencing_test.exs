@@ -30,6 +30,11 @@ defmodule GroundPlane.AIRunFencingTest do
     assert receipt.fence_receipts.endpoint_lease.fence_family == :endpoint_lease
     assert receipt.fence_receipts.provider_pool_lease.fence_family == :provider_pool_lease
     assert receipt.fence_receipts.replay_epoch.fence_family == :replay_epoch
+
+    assert receipt.persistence_posture.persistence_profile_ref ==
+             "persistence-profile://mickey_mouse"
+
+    assert receipt.fence_receipts.endpoint_lease.persistence_posture.durable? == false
     refute Map.has_key?(receipt, :payload)
     refute Map.has_key?(receipt, :provider_payload)
 
@@ -53,6 +58,43 @@ defmodule GroundPlane.AIRunFencingTest do
 
     assert {:error, {:stale_replay_epoch, _details}} =
              ReplayEpoch.authorize(%{epoch(:replay) | observed_epoch: 0}, now)
+  end
+
+  test "durable AI run fence posture does not change authorization semantics" do
+    now = DateTime.from_unix!(1_700_000_000)
+
+    assert {:ok, memory} =
+             AIRunFencing.authorize(%{
+               tenant_ref: "tenant://adaptive/a",
+               ai_run_ref: "ai-run://adaptive/run-1",
+               run_lock: run_lock(),
+               checkpoint_epoch: epoch(:checkpoint),
+               endpoint_lease: expiring_lease(now, :endpoint),
+               provider_pool_lease: expiring_lease(now, :provider_pool),
+               replay_epoch: epoch(:replay),
+               checked_at: now
+             })
+
+    assert {:ok, durable} =
+             AIRunFencing.authorize(%{
+               tenant_ref: "tenant://adaptive/a",
+               ai_run_ref: "ai-run://adaptive/run-1",
+               profile: :integration_postgres,
+               run_lock: run_lock(),
+               checkpoint_epoch: Map.put(epoch(:checkpoint), :profile, :integration_postgres),
+               endpoint_lease:
+                 Map.put(expiring_lease(now, :endpoint), :profile, :integration_postgres),
+               provider_pool_lease:
+                 Map.put(expiring_lease(now, :provider_pool), :profile, :integration_postgres),
+               replay_epoch: Map.put(epoch(:replay), :profile, :integration_postgres),
+               checked_at: now
+             })
+
+    assert Map.drop(memory, [:persistence_posture, :fence_receipts]) ==
+             Map.drop(durable, [:persistence_posture, :fence_receipts])
+
+    assert durable.persistence_posture.durable? == true
+    assert durable.fence_receipts.endpoint_lease.persistence_posture.durable? == true
   end
 
   defp run_lock do
