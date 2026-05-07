@@ -75,3 +75,15 @@ Evidence stores opaque refs, stable redacted ids, hashes, bounded metadata, clai
 ## Migration And Preflight Behavior
 
 Schema owners above this helper define migrations; this package supplies lower helper primitives.
+
+## Phase 12 No-Application-Schema Closeout
+
+- Tier: helper-only for `:integration_postgres` callers.
+- Schema owner: none in this package for the overlay release.
+- Migration owner: none in this package for the overlay release.
+- Migration command: not applicable.
+- Migration preflight command: caller-owned Postgres adapter preflight; this helper does not make a release durability claim by itself.
+- Failure behavior: callers that select durable Postgres without their own schema owner, migration proof, and store capability must fail before mutation.
+- Rollback behavior: rollback is caller-owned because this helper owns no application tables.
+- Tagged test command: `cd core/ground_plane_postgres && mix test` plus root `mix ci` when docs or helper contracts change.
+- Release claim boundary: this package can support caller durability but cannot be used as standalone proof of application-schema migration, restart safety, or product persistence.
