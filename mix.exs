@@ -1,3 +1,7 @@
+unless Code.ensure_loaded?(DependencySources) do
+  Code.require_file("build_support/dependency_sources.exs", __DIR__)
+end
+
 Code.require_file("build_support/workspace_contract.exs", __DIR__)
 
 defmodule GroundPlane.Workspace.MixProject do
@@ -45,13 +49,14 @@ defmodule GroundPlane.Workspace.MixProject do
   end
 
   defp deps do
-    [
-      {:blitz, "~> 0.3.0", runtime: false},
-      {:weld, "~> 0.8.1", only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.40.1", only: :dev, runtime: false}
-    ]
+    DependencySources.deps(__DIR__) ++
+      [
+        {:blitz, "~> 0.3.0", runtime: false},
+        {:weld, "~> 0.8.1", only: [:dev, :test], runtime: false},
+        {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+        {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+        {:ex_doc, "~> 0.40.1", only: :dev, runtime: false}
+      ]
   end
 
   defp aliases do
@@ -99,7 +104,7 @@ defmodule GroundPlane.Workspace.MixProject do
         hex_home: "_build/hex"
       ],
       parallelism: [
-        env: "GROUND_PLANE_MONOREPO_MAX_CONCURRENCY",
+        max_concurrency: nil,
         multiplier: :auto,
         base: [
           deps_get: 4,

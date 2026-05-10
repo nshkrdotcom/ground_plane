@@ -3,6 +3,8 @@ Code.require_file("workspace_contract.exs", __DIR__)
 defmodule GroundPlane.Build.WeldContract do
   @moduledoc false
 
+  alias GroundPlane.Build.WorkspaceManifest
+
   @artifact_docs [
     "README.md",
     "docs/overview.md",
@@ -15,7 +17,7 @@ defmodule GroundPlane.Build.WeldContract do
     [
       workspace: [
         root: "..",
-        project_globs: GroundPlane.Build.WorkspaceManifest.active_project_globs()
+        project_globs: WorkspaceManifest.active_project_globs()
       ],
       classify: [
         tooling: ["."],
