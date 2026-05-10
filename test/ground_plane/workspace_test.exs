@@ -17,7 +17,7 @@ defmodule GroundPlane.WorkspaceTest do
   end
 
   test "uses the released Weld line directly" do
-    assert {:weld, "~> 0.8.1", only: [:dev, :test], runtime: false} in MixProject.project()[:deps]
+    assert {:weld, "~> 0.8.2", only: [:dev, :test], runtime: false} in MixProject.project()[:deps]
   end
 
   test "does not select workspace concurrency from environment variables" do
