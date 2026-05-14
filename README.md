@@ -121,6 +121,28 @@ flowchart LR
   Primitives --> Rule["No product<br/>semantics"]
 ```
 
+## Developer Flow Diagrams
+
+```mermaid
+flowchart TD
+  Profile["Profile<br/>selection"] --> Tier["Storage<br/>tier"]
+  Tier --> Capability["Store<br/>capability"]
+  Capability --> Debug["Debug<br/>capture"]
+  Debug --> Partition["Partition<br/>dimensions"]
+  Partition --> Receipt["Receipt<br/>refs"]
+  Capability --> Reject["Unsupported<br/>selection"]
+```
+
+```mermaid
+flowchart LR
+  Need["Shared<br/>need"] --> Primitive["Primitive<br/>contract"]
+  Primitive --> Ids["IDs<br/>refs"]
+  Primitive --> Leases["Leases<br/>fences"]
+  Primitive --> Checkpoints["Checkpoints"]
+  Need --> Semantic["Semantic<br/>concept"]
+  Semantic --> Higher["Higher<br/>owner"]
+```
+
 ## Development
 
 The project targets Elixir `~> 1.19` and Erlang/OTP `28`.
