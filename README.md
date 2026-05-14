@@ -19,11 +19,31 @@ core.
 It holds the reusable lower primitives that sit underneath `outer_brain`,
 Citadel, `jido_integration`, and `app_kit`.
 
+GroundPlane should stay boring, small, and generic. If a concept mentions a
+product, provider, workflow engine, connector, model, runtime lane, or policy
+decision, it probably belongs higher in the stack. GroundPlane is the place for
+values that every owner can reuse without inheriting someone else's semantics.
+
+## Stack Position
+
+```text
+all ranked repos
+  -> ground_plane primitive packages
+      -> ids, refs, leases, fences, checkpoints, persistence policy,
+         generic Postgres helpers, generic projection helpers
+```
+
+Higher repos use these contracts to describe durable handoff and restart
+boundaries. GroundPlane does not know what a Codex run, Linear issue, policy
+pack, operator review, or semantic turn means.
+
 ## Scope
 
 - shared contracts and state vocabulary
 - Postgres transaction, outbox, inbox, and checkpoint helpers
 - generic projection publication helpers
+- generic persistence profile and debug-capture posture
+- adaptive AI run fences when they remain ref-only lower primitives
 
 ## Internal Libraries
 
@@ -45,6 +65,38 @@ live provider credential dependency, and no debug sidecar dependency.
 
 Workspace root established. The internal packages are intentionally small and
 generic.
+
+## Current Delivery State
+
+Active packages:
+
+- `core/ground_plane_contracts`: lower shared IDs, refs, leases, fences,
+  checkpoints, and state vocabulary.
+- `core/ai_run_fencing`: ref-only adaptive AI run fences for endpoint leases,
+  provider-pool leases, replay epochs, promotion epochs, router artifact
+  epochs, and revoked candidate artifacts.
+- `core/persistence_policy`: pure profile contracts for storage tier, debug
+  capture level, store capabilities, partition dimensions, and bounded debug
+  taps.
+- `core/persistence_policy_ai_extension`: AI-specific persistence-profile
+  extension points that still avoid product/provider semantics.
+- `core/ground_plane_postgres`: generic Postgres transaction and outbox/inbox
+  helpers.
+- `core/ground_plane_projection`: generic projection publication helpers.
+- `examples/projection_smoke`: composition proof for the packages.
+
+Recent work added adaptive AI run fencing, persistence-policy packages,
+persistence posture docs, credential lease fabric primitives, revoked-lease
+restart fencing, and dependency-source/Weld gates.
+
+## Primitive Admission Rule
+
+Before adding a new primitive, check that it can be named and tested without
+depending on product language or mechanism-specific behavior. Good examples are
+lease expiry, fence epoch, checkpoint ref, projection publish receipt, and
+storage capability descriptor. Bad examples are "Linear issue state", "Codex
+turn policy", "operator review status", or "Temporal workflow retry"; those
+belong in source/runtime/product owners that understand their meaning.
 
 ## Development
 
