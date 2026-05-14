@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/nshkrdotcom/ground_plane/actions/workflows/ci.yml">
-    <img alt="GitHub Actions Workflow Status" src="https://github.com/nshkrdotcom/ground_plane/actions/workflows/ci.yml/badge.svg" />
+  <a href="https://github.com/nshkrdotcom/ground_plane">
+    <img alt="GitHub: ground_plane" src="https://img.shields.io/badge/GitHub-ground_plane-0b0f14?logo=github" />
   </a>
   <a href="https://github.com/nshkrdotcom/ground_plane/blob/main/LICENSE">
     <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-0b0f14.svg" />
@@ -97,6 +97,29 @@ lease expiry, fence epoch, checkpoint ref, projection publish receipt, and
 storage capability descriptor. Bad examples are "Linear issue state", "Codex
 turn policy", "operator review status", or "Temporal workflow retry"; those
 belong in source/runtime/product owners that understand their meaning.
+
+## Primitive Diagrams
+
+```mermaid
+flowchart TD
+  Contracts["GroundPlane contracts"] --> IDs["IDs and refs"]
+  Contracts --> Leases["Leases and fences"]
+  Contracts --> Checkpoints["Checkpoints"]
+  Contracts --> Persistence["Persistence policy"]
+  Persistence --> Store["Store capability descriptors"]
+  Persistence --> Debug["Bounded debug taps"]
+  Postgres["Postgres helpers"] --> Outbox["Outbox and inbox"]
+  Projection["Projection helpers"] --> Receipts["Publish receipts"]
+```
+
+```mermaid
+flowchart LR
+  OuterBrain["OuterBrain"] --> Primitives["GroundPlane primitives"]
+  Citadel["Citadel"] --> Primitives
+  Jido["Jido Integration"] --> Primitives
+  AppKit["AppKit"] --> Primitives
+  Primitives --> Rule["No product, provider, workflow, or connector semantics"]
+```
 
 ## Development
 
