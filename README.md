@@ -102,23 +102,23 @@ belong in source/runtime/product owners that understand their meaning.
 
 ```mermaid
 flowchart TD
-  Contracts["GroundPlane contracts"] --> IDs["IDs and refs"]
-  Contracts --> Leases["Leases and fences"]
+  Contracts["GroundPlane<br/>contracts"] --> IDs["IDs<br/>refs"]
+  Contracts --> Leases["Leases<br/>fences"]
   Contracts --> Checkpoints["Checkpoints"]
-  Contracts --> Persistence["Persistence policy"]
-  Persistence --> Store["Store capability descriptors"]
-  Persistence --> Debug["Bounded debug taps"]
-  Postgres["Postgres helpers"] --> Outbox["Outbox and inbox"]
-  Projection["Projection helpers"] --> Receipts["Publish receipts"]
+  Contracts --> Persistence["Persistence<br/>policy"]
+  Persistence --> Store["Store<br/>capabilities"]
+  Persistence --> Debug["Debug<br/>taps"]
+  Postgres["Postgres<br/>helpers"] --> Outbox["Outbox<br/>inbox"]
+  Projection["Projection<br/>helpers"] --> Receipts["Publish<br/>receipts"]
 ```
 
 ```mermaid
 flowchart LR
-  OuterBrain["OuterBrain"] --> Primitives["GroundPlane primitives"]
+  OuterBrain["OuterBrain"] --> Primitives["GroundPlane<br/>primitives"]
   Citadel["Citadel"] --> Primitives
-  Jido["Jido Integration"] --> Primitives
+  Jido["Jido<br/>Integration"] --> Primitives
   AppKit["AppKit"] --> Primitives
-  Primitives --> Rule["No product, provider, workflow, or connector semantics"]
+  Primitives --> Rule["No product<br/>semantics"]
 ```
 
 ## Development
