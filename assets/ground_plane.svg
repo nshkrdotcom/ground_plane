@@ -1,56 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none" role="img" aria-labelledby="title desc">
-  <title id="title">GroundPlane logo</title>
-  <desc id="desc">A symmetric hexagonal infrastructure emblem with layered grid geometry and a grounded core.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" role="img" aria-labelledby="ground-title ground-desc">
+  <title id="ground-title">GroundPlane</title>
+  <desc id="ground-desc">A hexagonal foundation of primitive contracts, leases, fences, checkpoints, persistence policy, and Postgres outbox layers.</desc>
   <defs>
-    <linearGradient id="gpShell" x1="30" y1="24" x2="170" y2="176" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#7BE495"/>
-      <stop offset="0.52" stop-color="#29B6A6"/>
-      <stop offset="1" stop-color="#2E6FFF"/>
+    <clipPath id="ground-hex">
+      <path d="M100 4 L183 52 L183 148 L100 196 L17 148 L17 52 Z"/>
+    </clipPath>
+    <linearGradient id="ground-bg" x1="27" y1="23" x2="171" y2="181" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1f4033"/>
+      <stop offset="0.56" stop-color="#182716"/>
+      <stop offset="1" stop-color="#0a0d0a"/>
     </linearGradient>
-    <linearGradient id="gpTrace" x1="52" y1="44" x2="148" y2="156" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#E8FFF0"/>
-      <stop offset="1" stop-color="#D7E4FF"/>
+    <linearGradient id="ground-strata" x1="25" y1="104" x2="175" y2="174" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c99a5b"/>
+      <stop offset="0.48" stop-color="#7c5a35"/>
+      <stop offset="1" stop-color="#3a281a"/>
     </linearGradient>
-    <radialGradient id="gpAura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(100 104) rotate(90) scale(74)">
-      <stop offset="0" stop-color="#8EF6D9" stop-opacity="0.72"/>
-      <stop offset="1" stop-color="#8EF6D9" stop-opacity="0"/>
-    </radialGradient>
-    <filter id="gpShadow" x="12" y="12" width="176" height="178" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="11" stdDeviation="11" flood-color="#07161A" flood-opacity="0.26"/>
-    </filter>
-    <filter id="gpBloom" x="43" y="37" width="114" height="127" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="4.5" result="blur"/>
-      <feBlend in="SourceGraphic" in2="blur" mode="screen"/>
+    <filter id="ground-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="5" flood-color="#000000" flood-opacity="0.3"/>
     </filter>
   </defs>
-
-  <g filter="url(#gpShadow)">
-    <path d="M100 20L158.89 54V122L100 156L41.11 122V54L100 20Z" fill="url(#gpAura)"/>
-    <path d="M100 24L155.42 56V120L100 152L44.58 120V56L100 24Z" fill="#0B161B" fill-opacity="0.94" stroke="url(#gpShell)" stroke-width="4.6" stroke-linejoin="round"/>
-    <path d="M100 42L140.13 65V111L100 134L59.87 111V65L100 42Z" fill="#101C22" stroke="url(#gpTrace)" stroke-width="3.3" stroke-linejoin="round"/>
-    <path d="M100 58L124.25 72V100L100 114L75.75 100V72L100 58Z" fill="#0D1A1F" stroke="#D9FFF0" stroke-opacity="0.74" stroke-width="2.1" stroke-linejoin="round"/>
-  </g>
-
-  <g filter="url(#gpBloom)" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M100 42V152" stroke="url(#gpShell)" stroke-opacity="0.38" stroke-width="1.25"/>
-    <path d="M44.58 56H155.42" stroke="url(#gpShell)" stroke-opacity="0.18" stroke-width="1.1"/>
-    <path d="M52 88H148" stroke="#D9FFF0" stroke-opacity="0.54" stroke-width="1.5"/>
-    <path d="M59.87 65L100 88L140.13 65" stroke="#A9FFE0" stroke-opacity="0.7" stroke-width="1.55"/>
-    <path d="M59.87 111L100 88L140.13 111" stroke="#A9FFE0" stroke-opacity="0.7" stroke-width="1.55"/>
-    <path d="M44.58 120L155.42 56" stroke="url(#gpShell)" stroke-opacity="0.24" stroke-width="1.15"/>
-    <path d="M44.58 56L155.42 120" stroke="url(#gpShell)" stroke-opacity="0.24" stroke-width="1.15"/>
-    <path d="M75.75 72L124.25 100" stroke="#D7E4FF" stroke-opacity="0.76" stroke-width="1.45"/>
-    <path d="M124.25 72L75.75 100" stroke="#D7E4FF" stroke-opacity="0.76" stroke-width="1.45"/>
-    <path d="M87.5 121.6H112.5" stroke="#E8FFF0" stroke-opacity="0.68" stroke-width="1.55"/>
-    <circle cx="100" cy="88" r="10.4" fill="#12232A" stroke="#E8FFF0" stroke-width="2"/>
-    <circle cx="100" cy="88" r="3.6" fill="#7BE495"/>
-    <circle cx="59.87" cy="65" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
-    <circle cx="140.13" cy="65" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
-    <circle cx="59.87" cy="111" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
-    <circle cx="140.13" cy="111" r="3" fill="#0B161B" stroke="#E8FFF0" stroke-width="1.15"/>
-    <circle cx="75.75" cy="72" r="2.4" fill="#7BE495"/>
-    <circle cx="124.25" cy="72" r="2.4" fill="#7BE495"/>
-    <circle cx="75.75" cy="100" r="2.4" fill="#2E6FFF"/>
-    <circle cx="124.25" cy="100" r="2.4" fill="#2E6FFF"/>
+  <g clip-path="url(#ground-hex)">
+    <path d="M100 4 L183 52 L183 148 L100 196 L17 148 L17 52 Z" fill="url(#ground-bg)"/>
+    <path d="M23 117 C51 104 70 113 98 104 C127 95 146 102 177 89 L177 190 L23 190 Z" fill="url(#ground-strata)"/>
+    <path d="M24 136 C53 125 76 134 101 125 C128 116 148 124 176 111" fill="none" stroke="#e0bd78" stroke-width="3" opacity="0.75"/>
+    <path d="M25 156 C54 145 76 154 101 145 C129 136 148 144 175 131" fill="none" stroke="#3a281a" stroke-width="3" opacity="0.75"/>
+    <g filter="url(#ground-shadow)">
+      <path d="M52 83 H148 L159 115 H41 Z" fill="#d9eecf" stroke="#f8fff2" stroke-width="2.5"/>
+      <path d="M66 83 L74 62 H126 L134 83" fill="#92c47f" stroke="#f8fff2" stroke-width="2.5"/>
+      <path d="M76 114 V146 M100 114 V160 M124 114 V146" stroke="#f8fff2" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g fill="#102216" stroke="#f8fff2" stroke-width="2">
+      <path d="M61 93 H82 V108 H61 Z"/>
+      <path d="M89 93 H111 V108 H89 Z"/>
+      <path d="M118 93 H139 V108 H118 Z"/>
+      <circle cx="60" cy="58" r="9"/>
+      <circle cx="140" cy="58" r="9"/>
+    </g>
+    <g stroke="#f8fff2" stroke-width="2" stroke-linecap="round">
+      <path d="M66 101 H77 M94 101 H106 M123 101 H134"/>
+      <path d="M56 58 H64 M136 58 H144"/>
+    </g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M60 58 C70 45 85 40 100 40 C115 40 130 45 140 58" stroke="#aaff98" stroke-width="4"/>
+      <path d="M100 40 V26" stroke="#aaff98" stroke-width="4"/>
+      <path d="M91 27 H109" stroke="#aaff98" stroke-width="4"/>
+      <path d="M43 124 L55 137 L73 116" stroke="#aaff98" stroke-width="4"/>
+      <path d="M130 140 H158" stroke="#e0bd78" stroke-width="4"/>
+    </g>
+    <path d="M100 4 L183 52 L183 148 L100 196 L17 148 L17 52 Z" fill="none" stroke="#e8ffd8" stroke-width="4"/>
   </g>
 </svg>
