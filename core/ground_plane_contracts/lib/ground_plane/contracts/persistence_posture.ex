@@ -11,7 +11,7 @@ defmodule GroundPlane.Contracts.PersistencePosture do
     :revocation_epoch,
     :restart_checkpoint,
     :duplicate_dispatch_fence,
-    :ai_run_fence_receipt
+    :execution_fence_receipt
   ]
 
   @profiles %{
@@ -53,7 +53,7 @@ defmodule GroundPlane.Contracts.PersistencePosture do
       capture_level: :refs_only,
       store_set: :ops_durable,
       durable?: true,
-      restart_claim: :durable_workflow,
+      restart_claim: :durable_restart,
       retention: "retention://temporal_durable"
     },
     full_debug_tracked: %{

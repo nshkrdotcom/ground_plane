@@ -3,8 +3,8 @@ defmodule GroundPlane.Contracts.WorkspaceRef do
   Opaque workspace reference for manifests, proof ledgers, and trace fixtures.
 
   The reference identifies a logical workspace by owner and workspace name
-  only. It does not contain local filesystem paths, tenant policy, product
-  semantics, provider payloads, or runtime execution details.
+  only. It does not contain local filesystem paths, tenant policy, domain
+  semantics, higher-layer payloads, or execution details.
   """
 
   alias GroundPlane.Contracts.Segment

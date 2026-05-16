@@ -5,10 +5,10 @@ defmodule GroundPlane.WorkspaceTest do
   alias GroundPlane.Workspace.MixProject
 
   test "lists workspace packages" do
-    assert "core/ai_run_fencing" in Workspace.package_paths()
+    assert "core/execution_fencing" in Workspace.package_paths()
     assert "core/ground_plane_contracts" in Workspace.package_paths()
     assert "core/persistence_policy" in Workspace.package_paths()
-    assert "core/persistence_policy_ai_extension" in Workspace.package_paths()
+    assert "core/persistence_policy_data_extension" in Workspace.package_paths()
     assert "examples/projection_smoke" in Workspace.package_paths()
   end
 

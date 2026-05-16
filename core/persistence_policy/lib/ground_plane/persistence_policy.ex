@@ -65,10 +65,10 @@ defmodule GroundPlane.PersistencePolicy do
     @fields [
       :tenant_ref,
       :installation_ref,
-      :provider_family,
-      :provider_ref,
-      :provider_account_ref,
-      :connector_instance_ref,
+      :resource_family,
+      :resource_ref,
+      :resource_account_ref,
+      :resource_instance_ref,
       :target_ref,
       :environment_ref,
       :region_ref,
@@ -195,9 +195,9 @@ defmodule GroundPlane.PersistencePolicy do
       :auth_header,
       :raw_prompt,
       :prompt_body,
-      :provider_payload,
-      :raw_provider_payload,
-      :provider_account_identifier,
+      :external_payload,
+      :raw_external_payload,
+      :resource_account_identifier,
       "raw_secret",
       "secret",
       "api_key",
@@ -208,9 +208,9 @@ defmodule GroundPlane.PersistencePolicy do
       "auth_header",
       "raw_prompt",
       "prompt_body",
-      "provider_payload",
-      "raw_provider_payload",
-      "provider_account_identifier"
+      "external_payload",
+      "raw_external_payload",
+      "resource_account_identifier"
     ]
 
     @spec forbidden_keys() :: [atom() | String.t()]
@@ -305,7 +305,7 @@ defmodule GroundPlane.PersistencePolicy do
   @precedence_keys [
     :profile,
     :persistence_profile,
-    :workflow_profile,
+    :restart_profile,
     :session_profile,
     :authority_profile,
     :tenant_policy_profile,
@@ -487,7 +487,7 @@ defmodule GroundPlane.PersistencePolicy do
 
   defp restart_claim(:local_restart_safe), do: :restart_safe
   defp restart_claim(:postgres_shared), do: :durable
-  defp restart_claim(:temporal_durable), do: :durable_workflow
+  defp restart_claim(:temporal_durable), do: :durable_restart
   defp restart_claim(:object_store), do: :durable_artifact
   defp restart_claim(_tier), do: :none
 

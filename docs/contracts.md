@@ -9,13 +9,13 @@ Current contract families:
 - leases
 - fences
 - checkpoints
-- adaptive AI run fence receipts
+- adaptive execution fence receipts
 
-`ground_plane_ai_run_fencing` owns adaptive lower-primitive fences for run
-locks, checkpoint epochs, endpoint leases, provider pool leases, router
+`ground_plane_execution_fencing` owns adaptive lower-primitive fences for run
+locks, checkpoint epochs, endpoint leases, resource pool leases, router
 artifact epochs, replay epochs, promotion epochs, and revoked candidate
-artifacts. It stays ref-only and does not own provider SDKs, product logic,
-workflow state machines, or governance policy.
+artifacts. It stays ref-only and does not own higher-layer SDKs, domain logic,
+state machines, or governance policy.
 
 ## Environment Authority Boundary
 

@@ -3,8 +3,7 @@ defmodule GroundPlane.Contracts.ArtifactRef do
   Opaque artifact reference for contract ledgers and proof receipts.
 
   The reference identifies a produced artifact by owner, producer repository,
-  and artifact name only. It deliberately carries no release, audit,
-  provider, product, or workflow semantics.
+  and artifact name only. It deliberately carries no higher-layer semantics.
   """
 
   alias GroundPlane.Contracts.Segment

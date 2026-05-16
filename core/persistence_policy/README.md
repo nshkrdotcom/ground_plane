@@ -4,24 +4,24 @@ Pure persistence profile, tier, capture-level, store-set, partition, and debug
 tap contracts for the governed runtime.
 
 The built-in default is `:mickey_mouse`: memory-only, no durable
-infrastructure, no live provider credentials, no network requirement, no
+infrastructure, no live external credentials, no network requirement, no
 object store, and no debug sidecar.
 
 This package does not depend on Ecto, AshPostgres, Temporal, object stores,
-provider SDKs, product repos, or optional external substrates. Adapter packages
+external SDKs, higher-layer repos, or optional external substrates. Adapter packages
 own their own schemas, migrations, and durable preflights.
 
 ## Profiles
 
 Profile resolution is pure data. Callers pass profile hints from their own
 platform layer; this package never reads process environment, application
-environment, files, provider credentials, or network state.
+environment, files, external credentials, or network state.
 
 Profile precedence is:
 
 1. `:profile`
 2. `:persistence_profile`
-3. `:workflow_profile`
+3. `:restart_profile`
 4. `:session_profile`
 5. `:authority_profile`
 6. `:tenant_policy_profile`
@@ -53,9 +53,9 @@ memory.
 list of redacted metadata events. Debug taps reject forbidden raw fields before
 mutating tap state, and tap failures return the original tap unchanged.
 
-Forbidden debug event keys include raw secrets, raw prompts, provider payloads,
+Forbidden debug event keys include raw secrets, raw prompts, external payloads,
 auth headers, API keys, OAuth secrets, token files, credential bodies, native
-auth file content, and unredacted provider account identifiers.
+auth file content, and unredacted resource account identifiers.
 
 ## Persistence Documentation
 

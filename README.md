@@ -43,14 +43,14 @@ pack, operator review, or semantic turn means.
 - Postgres transaction, outbox, inbox, and checkpoint helpers
 - generic projection publication helpers
 - generic persistence profile and debug-capture posture
-- adaptive AI run fences when they remain ref-only lower primitives
+- adaptive execution fences when they remain ref-only lower primitives
 
 ## Internal Libraries
 
 - `ground_plane_contracts`
-- `ground_plane_ai_run_fencing`
+- `ground_plane_execution_fencing`
 - `ground_plane_persistence_policy`
-- `ground_plane_persistence_policy_ai_extension`
+- `ground_plane_persistence_policy_data_extension`
 - `ground_plane_postgres`
 - `ground_plane_projection`
 
@@ -72,20 +72,20 @@ Active packages:
 
 - `core/ground_plane_contracts`: lower shared IDs, refs, leases, fences,
   checkpoints, and state vocabulary.
-- `core/ai_run_fencing`: ref-only adaptive AI run fences for endpoint leases,
-  provider-pool leases, replay epochs, promotion epochs, router artifact
+- `core/execution_fencing`: ref-only adaptive execution fences for endpoint leases,
+  resource-pool leases, replay epochs, promotion epochs, router artifact
   epochs, and revoked candidate artifacts.
 - `core/persistence_policy`: pure profile contracts for storage tier, debug
   capture level, store capabilities, partition dimensions, and bounded debug
   taps.
-- `core/persistence_policy_ai_extension`: AI-specific persistence-profile
-  extension points that still avoid product/provider semantics.
+- `core/persistence_policy_data_extension`: generic data persistence-profile
+  extension points that still avoid higher-layer semantics.
 - `core/ground_plane_postgres`: generic Postgres transaction and outbox/inbox
   helpers.
 - `core/ground_plane_projection`: generic projection publication helpers.
 - `examples/projection_smoke`: composition proof for the packages.
 
-Recent work added adaptive AI run fencing, persistence-policy packages,
+Recent work added long-running execution fencing, persistence-policy packages,
 persistence posture docs, credential lease fabric primitives, revoked-lease
 restart fencing, and dependency-source/Weld gates.
 

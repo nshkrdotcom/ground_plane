@@ -2,9 +2,9 @@ defmodule GroundPlane.Contracts.RepoRef do
   @moduledoc """
   Generic repository reference for local workspaces and artifact ledgers.
 
-  The reference carries source ownership only. It deliberately avoids product,
-  provider, governance, execution-lane, and workflow semantics so it can sit in
-  GroundPlane without pulling higher-layer meaning downward.
+  The reference carries repository ownership only. It deliberately avoids
+  higher-layer semantics so it can sit in GroundPlane without pulling domain
+  meaning downward.
   """
 
   alias GroundPlane.Contracts.Segment

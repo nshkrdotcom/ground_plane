@@ -166,13 +166,13 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
     )
   end
 
-  test "credential lease scope rejects mismatched provider, operation, target, policy, rotation, and fence" do
+  test "credential lease scope rejects mismatched resource, operation, target, policy, rotation, and fence" do
     now = DateTime.from_unix!(1_700_000_000)
 
     assert {:ok, lease} = Lease.new(credential_lease_attrs(now))
     fence = Fence.from_lease(lease)
 
-    assert {:ok, evidence} =
+    assert {:ok, receipt} =
              Fence.authorize_credential_materialization(
                lease,
                fence,
@@ -180,14 +180,14 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
                now
              )
 
-    assert evidence.provider_family == "codex"
-    refute Map.has_key?(evidence, :payload)
+    assert receipt.resource_family == "resource-a"
+    refute Map.has_key?(receipt, :payload)
 
-    assert {:error, {:provider_account_mismatch, _details}} =
+    assert {:error, {:resource_account_mismatch, _details}} =
              Fence.authorize_credential_materialization(
                lease,
                fence,
-               credential_context(%{provider_account_ref: "provider-account://tenant-1/codex/b"}),
+               credential_context(%{resource_account_ref: "account://tenant-1/resource-a/b"}),
                now
              )
 
@@ -203,7 +203,9 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
              Fence.authorize_credential_materialization(
                lease,
                fence,
-               credential_context(%{policy_revision_ref: "policy-revision://tenant-1/codex/2"}),
+               credential_context(%{
+                 policy_revision_ref: "policy-revision://tenant-1/resource-a/2"
+               }),
                now
              )
 
@@ -238,7 +240,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
     assert {:error, {:fence_token_mismatch, _details}} =
              Fence.authorize_credential_materialization(
                lease,
-               %Fence{fence | fence_token: "fence://tenant-1/codex/a/2"},
+               %Fence{fence | fence_token: "fence://tenant-1/resource-a/a/2"},
                credential_context(%{}),
                now
              )
@@ -259,16 +261,16 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
              )
 
     assert retry.retry_dispatch_status == :authorized_revalidated
-    assert retry.idempotency_key == "idem://tenant-1/codex/retry-1"
-    assert retry.active_execution_ref == "execution://tenant-1/codex/active-1"
-    assert retry.restart_event == :workflow_resume
+    assert retry.idempotency_key == "idem://tenant-1/resource-a/retry-1"
+    assert retry.active_execution_ref == "execution://tenant-1/resource-a/active-1"
+    assert retry.restart_event == :lifecycle_resume
     refute Map.has_key?(retry, :payload)
 
     assert {:error, {:duplicate_active_execution_after_restart, _details}} =
              Fence.authorize_retry_dispatch(
                lease,
                fence,
-               retry_context(%{current_execution_ref: "execution://tenant-1/codex/other"}),
+               retry_context(%{current_execution_ref: "execution://tenant-1/resource-a/other"}),
                now
              )
 
@@ -285,7 +287,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
                lease,
                fence,
                retry_context(%{
-                 materialized_credential_lease_ref: "credential-lease://tenant-1/codex/old"
+                 materialized_credential_lease_ref: "credential-lease://tenant-1/resource-a/old"
                }),
                now
              )
@@ -302,7 +304,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
           :sandbox_restart,
           :process_crash,
           :stream_reconnect,
-          :workflow_resume
+          :lifecycle_resume
         ] do
       assert {:ok, result} =
                Fence.authorize_retry_dispatch(
@@ -326,7 +328,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
     assert details.restart_event == :dump_previous_token
   end
 
-  test "credential lease cleanup emits terminal redacted evidence only" do
+  test "credential lease cleanup emits terminal redacted receipt only" do
     now = DateTime.from_unix!(1_700_000_000)
     expired_at = DateTime.add(now, -1, :second)
 
@@ -337,12 +339,12 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
 
     assert {:ok, cleanup} =
              Lease.cleanup_event(expired_lease, %{
-               cleanup_ref: "cleanup://tenant-1/codex/lease-1",
+               cleanup_ref: "cleanup://tenant-1/resource-a/lease-1",
                cleaned_at: now
              })
 
     assert cleanup.status == :cleaned
-    assert cleanup.credential_lease_ref == "credential-lease://tenant-1/codex/a/1"
+    assert cleanup.credential_lease_ref == "credential-lease://tenant-1/resource-a/a/1"
     refute Map.has_key?(cleanup, :payload)
 
     assert {:error, :active_lease_cleanup_rejected} =
@@ -350,7 +352,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
              |> Lease.new()
              |> then(fn {:ok, active_lease} ->
                Lease.cleanup_event(active_lease, %{
-                 cleanup_ref: "cleanup://tenant-1/codex/lease-active",
+                 cleanup_ref: "cleanup://tenant-1/resource-a/lease-active",
                  cleaned_at: now
                })
              end)
@@ -401,8 +403,8 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
     with_env(%{"GROUND_PLANE_TENANT_ID" => "tenant-from-env"}, fn ->
       assert {:error, {:missing_required_fields, [:tenant_id]}} =
                ResourcePath.new(%{
-                 segments: ["workflow", "resource-work-1"],
-                 resource_kind_path: ["workflow"],
+                 segments: ["lease", "resource-work-1"],
+                 resource_kind_path: ["lease"],
                  terminal_resource_id: "resource-work-1"
                })
 
@@ -418,27 +420,27 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
 
   defp credential_lease_attrs(now) do
     %{
-      resource: "credential:codex:tenant-1:account-a",
+      resource: "credential:resource-a:tenant-1:account-a",
       holder: "materializer-a",
       lease_id: "lease_active",
       epoch: 4,
       expires_at: DateTime.add(now, 30, :second),
       tenant_id: "tenant-1",
-      subject_ref: "subject://tenant-1/codex/user-a",
-      provider_family: "codex",
-      provider_account_ref: "provider-account://tenant-1/codex/account-a",
-      connector_instance_ref: "connector-instance://tenant-1/codex/a",
-      credential_handle_ref: "credential-handle://tenant-1/codex/account-a",
-      credential_lease_ref: "credential-lease://tenant-1/codex/a/1",
+      subject_ref: "subject://tenant-1/resource-a/user-a",
+      resource_family: "resource-a",
+      resource_account_ref: "account://tenant-1/resource-a/account-a",
+      resource_instance_ref: "resource-instance://tenant-1/resource-a/a",
+      credential_handle_ref: "credential-handle://tenant-1/resource-a/account-a",
+      credential_lease_ref: "credential-lease://tenant-1/resource-a/a/1",
       operation_class: "cli",
       target_ref: "target://tenant-1/sandbox/a",
       attach_grant_ref: "attach-grant://tenant-1/sandbox/a",
-      operation_policy_ref: "operation-policy://tenant-1/codex/run",
+      operation_policy_ref: "operation-policy://tenant-1/resource-a/run",
       installation_revision_ref: "installation-revision://tenant-1/app/1",
-      policy_revision_ref: "policy-revision://tenant-1/codex/1",
+      policy_revision_ref: "policy-revision://tenant-1/resource-a/1",
       target_grant_revision: "target-grant-revision://tenant-1/sandbox/1",
       rotation_epoch: 1,
-      fence_token: "fence://tenant-1/codex/a/1"
+      fence_token: "fence://tenant-1/resource-a/a/1"
     }
   end
 
@@ -446,19 +448,19 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
     Map.merge(
       %{
         tenant_id: "tenant-1",
-        provider_family: "codex",
-        provider_account_ref: "provider-account://tenant-1/codex/account-a",
-        connector_instance_ref: "connector-instance://tenant-1/codex/a",
-        credential_handle_ref: "credential-handle://tenant-1/codex/account-a",
+        resource_family: "resource-a",
+        resource_account_ref: "account://tenant-1/resource-a/account-a",
+        resource_instance_ref: "resource-instance://tenant-1/resource-a/a",
+        credential_handle_ref: "credential-handle://tenant-1/resource-a/account-a",
         operation_class: "cli",
         target_ref: "target://tenant-1/sandbox/a",
         attach_grant_ref: "attach-grant://tenant-1/sandbox/a",
-        operation_policy_ref: "operation-policy://tenant-1/codex/run",
+        operation_policy_ref: "operation-policy://tenant-1/resource-a/run",
         installation_revision_ref: "installation-revision://tenant-1/app/1",
-        policy_revision_ref: "policy-revision://tenant-1/codex/1",
+        policy_revision_ref: "policy-revision://tenant-1/resource-a/1",
         target_grant_revision: "target-grant-revision://tenant-1/sandbox/1",
         rotation_epoch: 1,
-        fence_token: "fence://tenant-1/codex/a/1"
+        fence_token: "fence://tenant-1/resource-a/a/1"
       },
       attrs
     )
@@ -467,14 +469,14 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
   defp retry_context(attrs) do
     Map.merge(
       credential_context(%{
-        idempotency_key: "idem://tenant-1/codex/retry-1",
-        dispatch_ref: "dispatch://tenant-1/codex/retry-1",
-        active_execution_ref: "execution://tenant-1/codex/active-1",
-        current_execution_ref: "execution://tenant-1/codex/active-1",
-        retry_authority_ref: "retry-authority://tenant-1/codex/retry-1",
+        idempotency_key: "idem://tenant-1/resource-a/retry-1",
+        dispatch_ref: "dispatch://tenant-1/resource-a/retry-1",
+        active_execution_ref: "execution://tenant-1/resource-a/active-1",
+        current_execution_ref: "execution://tenant-1/resource-a/active-1",
+        retry_authority_ref: "retry-authority://tenant-1/resource-a/retry-1",
         materialization_epoch: 1,
-        materialized_credential_lease_ref: "credential-lease://tenant-1/codex/a/1",
-        restart_event: :workflow_resume
+        materialized_credential_lease_ref: "credential-lease://tenant-1/resource-a/a/1",
+        restart_event: :lifecycle_resume
       }),
       attrs
     )

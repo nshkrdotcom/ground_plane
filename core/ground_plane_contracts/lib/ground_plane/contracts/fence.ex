@@ -12,9 +12,9 @@ defmodule GroundPlane.Contracts.Fence do
     :lease_id,
     :epoch,
     :tenant_id,
-    :provider_family,
-    :provider_account_ref,
-    :connector_instance_ref,
+    :resource_family,
+    :resource_account_ref,
+    :resource_instance_ref,
     :credential_handle_ref,
     :credential_lease_ref,
     :operation_class,
@@ -35,9 +35,9 @@ defmodule GroundPlane.Contracts.Fence do
           lease_id: String.t(),
           epoch: non_neg_integer(),
           tenant_id: String.t() | nil,
-          provider_family: String.t() | nil,
-          provider_account_ref: String.t() | nil,
-          connector_instance_ref: String.t() | nil,
+          resource_family: String.t() | nil,
+          resource_account_ref: String.t() | nil,
+          resource_instance_ref: String.t() | nil,
           credential_handle_ref: String.t() | nil,
           credential_lease_ref: String.t() | nil,
           operation_class: String.t() | nil,
@@ -54,9 +54,9 @@ defmodule GroundPlane.Contracts.Fence do
 
   @credential_scope_checks [
     tenant_id: :tenant_mismatch,
-    provider_family: :provider_family_mismatch,
-    provider_account_ref: :provider_account_mismatch,
-    connector_instance_ref: :connector_mismatch,
+    resource_family: :resource_family_mismatch,
+    resource_account_ref: :resource_account_mismatch,
+    resource_instance_ref: :resource_instance_mismatch,
     credential_handle_ref: :credential_handle_mismatch,
     credential_lease_ref: :credential_lease_mismatch,
     operation_class: :operation_class_mismatch,
@@ -82,7 +82,7 @@ defmodule GroundPlane.Contracts.Fence do
     :sandbox_restart,
     :process_crash,
     :stream_reconnect,
-    :workflow_resume
+    :lifecycle_resume
   ]
 
   @spec from_lease(Lease.t()) :: t()
@@ -93,9 +93,9 @@ defmodule GroundPlane.Contracts.Fence do
       lease_id: lease.lease_id,
       epoch: lease.epoch,
       tenant_id: lease.tenant_id,
-      provider_family: lease.provider_family,
-      provider_account_ref: lease.provider_account_ref,
-      connector_instance_ref: lease.connector_instance_ref,
+      resource_family: lease.resource_family,
+      resource_account_ref: lease.resource_account_ref,
+      resource_instance_ref: lease.resource_instance_ref,
       credential_handle_ref: lease.credential_handle_ref,
       credential_lease_ref: lease.credential_lease_ref,
       operation_class: lease.operation_class,

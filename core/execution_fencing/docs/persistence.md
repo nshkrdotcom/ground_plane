@@ -1,0 +1,77 @@
+# GroundPlane Execution Fencing Persistence
+
+## Scope
+
+GroundPlane Execution Fencing owns ref-only execution fences and checkpoint receipt ownership. This document is package-local and is the persistence contract for `core/execution_fencing` in `ground_plane`.
+
+## Available Tiers
+
+- `:mickey_mouse`: memory or ref-only default. No restart durability claim.
+- `:memory_debug`: memory or ref-only with redacted debug evidence only.
+- `:local_restart_safe`: supported only when this package or a named adapter package owns a local durable store and preflight proof.
+- `:integration_postgres`: supported only when a named Postgres or AshPostgres adapter and migration proof are configured.
+- `:ops_durable`: supported only for restart-owning packages after explicit substrate proof.
+- `:full_debug_tracked`: supported only when durable storage and redacted debug capture are both explicitly preflighted.
+
+## Default Tier
+
+The default tier is `:mickey_mouse`. It is memory-only or ref-only and is lost on restart unless this package explicitly states that a local durable adapter has been selected by the caller.
+
+## Capture Levels
+
+Supported capture levels are `:off`, `:metadata`, `:refs_only`, `:redacted_debug`, and `:full_debug` when the package explicitly supports full debug. Raw credentials, auth headers, token files, credential bodies, raw prompt bodies, raw external payload bodies, native auth file content, private keys, session cookies, refresh tokens, access tokens, database URLs with credentials, and object-store signed URLs are always forbidden.
+
+## Supported Adapters
+
+Memory/ref-only receipts by default.
+
+## Unsupported Adapters
+
+Unsupported adapter selections fail before mutation. Silent fallback from durable selection to memory is invalid. Product code must not import lower store modules directly to compensate for a missing adapter.
+
+## Configuration Precedence
+
+Configuration is explicit caller data first, package option second, release profile third, and built-in default last. Governed flows do not read process environment, local credential files, external defaults, singleton clients, or application configuration as authority unless this package names a standalone boot boundary.
+
+## Example Config
+
+```elixir
+# Default deterministic profile.
+[persistence_profile: :mickey_mouse]
+
+# Redacted in-memory debug profile.
+[persistence_profile: :memory_debug, capture_level: :redacted_debug]
+
+# Durable opt-in example. The caller must also pass adapter capability and preflight proof.
+[persistence_profile: :integration_postgres]
+```
+
+## Test Commands
+
+```bash
+cd core/execution_fencing && mix test; root mix ci
+```
+
+## Lost-On-Restart Claims
+
+`:mickey_mouse` and `:memory_debug` data is lost on BEAM or process restart unless the package explicitly says a local durable adapter was selected. Memory profiles may prove semantics, validation, and receipt shape; they do not prove restart durability.
+
+## Valid Durability Claims
+
+Valid durability claims require explicit profile selection, adapter capability, migration or substrate preflight, redacted receipt proof, focused tests, repo QC, and a pushed commit. Durable profiles may add store and receipt refs to fence receipts after capability preflight.
+
+## Invalid Durability Claims
+
+Invalid claims include ambient external credentials, default database reachability, default durable-substrate reachability, object-store availability without opt-in, network reachability, raw debug capture, raw prompt capture, raw external payload capture, and direct lower-store imports from higher layers.
+
+## Debug Sidecar Behavior
+
+Debug sidecars are disabled by default. When enabled, they are read-only or append-only redacted receipt surfaces. Debug failure must be non-mutating and must not alter authority, lease, run, store, projection, or higher-layer state.
+
+## Redaction Guarantees
+
+Receipts store opaque refs, stable redacted ids, hashes, bounded metadata, claim-check refs, capture tags, receipt refs, store refs without credentials, and partition refs without secrets. Raw secret and raw payload fields are rejected before persistence or export.
+
+## Migration And Preflight Behavior
+
+No migrations in this package.

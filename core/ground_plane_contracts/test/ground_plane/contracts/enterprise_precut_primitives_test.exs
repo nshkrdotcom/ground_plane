@@ -18,8 +18,8 @@ defmodule GroundPlane.Contracts.EnterprisePrecutPrimitivesTest do
     assert {:ok, resource_path} =
              ResourcePath.new(%{
                tenant_id: "tenant-acme",
-               segments: ["tenant-acme", "workflow", "resource-work-1"],
-               resource_kind_path: ["tenant", "workflow"],
+               segments: ["tenant-acme", "lease", "resource-work-1"],
+               resource_kind_path: ["tenant", "lease"],
                terminal_resource_id: "resource-work-1"
              })
 
@@ -48,7 +48,7 @@ defmodule GroundPlane.Contracts.EnterprisePrecutPrimitivesTest do
              GraphEdgeRef.new(%{
                edge_ref: "edge-command-workflow-1",
                tenant_id: "tenant-acme",
-               source_ref: node.node_ref,
+               origin_ref: node.node_ref,
                target_ref: "node-workflow-110",
                edge_kind: "caused",
                trace_id: "trace-116"
@@ -77,8 +77,8 @@ defmodule GroundPlane.Contracts.EnterprisePrecutPrimitivesTest do
   test "resource path and epoch refs fail closed on missing tenant scope" do
     assert {:error, {:missing_required_fields, [:tenant_id]}} =
              ResourcePath.new(%{
-               segments: ["workflow", "resource-work-1"],
-               resource_kind_path: ["workflow"],
+               segments: ["lease", "resource-work-1"],
+               resource_kind_path: ["lease"],
                terminal_resource_id: "resource-work-1"
              })
 

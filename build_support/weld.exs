@@ -26,9 +26,9 @@ defmodule GroundPlane.Build.WeldContract do
       publication: [
         internal_only: [
           ".",
-          "core/ai_run_fencing",
+          "core/execution_fencing",
           "core/persistence_policy",
-          "core/persistence_policy_ai_extension",
+          "core/persistence_policy_data_extension",
           "examples/projection_smoke"
         ]
       ],

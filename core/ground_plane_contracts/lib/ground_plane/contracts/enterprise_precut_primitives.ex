@@ -96,7 +96,7 @@ defmodule GroundPlane.Contracts.GraphEdgeRef do
 
   alias GroundPlane.Contracts.EnterprisePrecutSupport
 
-  @fields [:edge_ref, :tenant_id, :source_ref, :target_ref, :edge_kind, :trace_id]
+  @fields [:edge_ref, :tenant_id, :origin_ref, :target_ref, :edge_kind, :trace_id]
   defstruct @fields
 
   @type t :: %__MODULE__{}
@@ -106,7 +106,7 @@ defmodule GroundPlane.Contracts.GraphEdgeRef do
       EnterprisePrecutSupport.build(
         __MODULE__,
         @fields,
-        [:edge_ref, :tenant_id, :source_ref, :target_ref, :edge_kind, :trace_id],
+        [:edge_ref, :tenant_id, :origin_ref, :target_ref, :edge_kind, :trace_id],
         attrs
       )
 end

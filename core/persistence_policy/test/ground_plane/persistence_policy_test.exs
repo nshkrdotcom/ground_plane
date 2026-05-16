@@ -83,8 +83,8 @@ defmodule GroundPlane.PersistencePolicyTest do
     assert :ok = PersistencePolicy.preflight(profile, [capability], fn ^capability -> :ok end)
   end
 
-  test "raw secret, prompt, and provider payload capture is rejected" do
-    for key <- [:raw_secret, :raw_prompt, :provider_payload, "authorization_header"] do
+  test "raw secret, prompt, and external payload capture is rejected" do
+    for key <- [:raw_secret, :raw_prompt, :external_payload, "authorization_header"] do
       assert {:error, {:raw_debug_capture_forbidden, ^key}} =
                PersistencePolicy.Redaction.validate_event(%{key => "raw"})
     end

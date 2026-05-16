@@ -27,6 +27,7 @@ defmodule GroundPlane.Postgres.OutboxInboxTest do
     entry =
       Inbox.new_entry("execution_plane", %{receipt_id: "receipt_1"}, idempotency_key: "idem_1")
 
+    assert entry.origin == "execution_plane"
     assert entry.state == "received"
 
     entry = Inbox.mark_applied(entry, DateTime.from_unix!(1_700_000_000))

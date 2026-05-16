@@ -6,10 +6,10 @@ defmodule GroundPlane.Postgres.Inbox do
   alias GroundPlane.Contracts.Id
 
   @spec new_entry(String.t(), map(), keyword()) :: map()
-  def new_entry(source, payload, opts \\ []) when is_binary(source) and is_map(payload) do
+  def new_entry(origin, payload, opts \\ []) when is_binary(origin) and is_map(payload) do
     %{
       receipt_id: Id.random("inbox"),
-      source: source,
+      origin: origin,
       payload: payload,
       idempotency_key: Keyword.get(opts, :idempotency_key, Id.random("receipt")),
       state: "received"
