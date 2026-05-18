@@ -31,6 +31,7 @@ defmodule GroundPlane.Contracts.MixProject do
 
   defp deps do
     [
+      {:jason, "~> 1.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40.1", only: :dev, runtime: false}
