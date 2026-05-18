@@ -26,11 +26,11 @@ defmodule GroundPlane.Boundary.EnvelopeTest do
   test "envelope encodes and digests as canonical boundary data" do
     envelope = Fixtures.boundary_envelopes().appkit_mezzanine
 
-    assert envelope.source == "app_kit"
+    assert envelope.origin == "app_kit"
     assert envelope.target == "mezzanine"
     assert String.starts_with?(Envelope.digest(envelope), "sha256:")
 
-    assert %{"source" => "app_kit", "target" => "mezzanine"} =
+    assert %{"origin" => "app_kit", "target" => "mezzanine"} =
              envelope |> Envelope.encode!() |> Codec.decode!()
   end
 
@@ -38,7 +38,7 @@ defmodule GroundPlane.Boundary.EnvelopeTest do
     assert {:error, :boundary_pid_not_serializable} =
              Envelope.new(%{
                id: "boundary://bad",
-               source: "app_kit",
+               origin: "app_kit",
                target: "mezzanine",
                operation: "bad",
                tenant_id: "tenant-a",
@@ -50,7 +50,7 @@ defmodule GroundPlane.Boundary.EnvelopeTest do
     assert {:error, :ambiguous_boundary_payload_location} =
              Envelope.new(%{
                id: "boundary://bad",
-               source: "app_kit",
+               origin: "app_kit",
                target: "mezzanine",
                operation: "bad",
                tenant_id: "tenant-a",

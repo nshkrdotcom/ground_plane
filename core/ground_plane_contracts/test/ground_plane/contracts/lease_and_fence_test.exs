@@ -305,7 +305,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
           :process_crash,
           :stream_reconnect,
           :lifecycle_resume,
-          :workflow_resume
+          :orchestration_resume
         ] do
       assert {:ok, result} =
                Fence.authorize_retry_dispatch(

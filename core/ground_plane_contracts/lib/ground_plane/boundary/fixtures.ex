@@ -6,10 +6,10 @@ defmodule GroundPlane.Boundary.Fixtures do
   alias GroundPlane.Boundary.Envelope
 
   @boundaries [
-    appkit_mezzanine: {"app_kit", "mezzanine", "source.fetch_candidates"},
+    appkit_mezzanine: {"app_kit", "mezzanine", "intake.fetch_candidates"},
     mezzanine_citadel: {"mezzanine", "citadel", "authority.authorize_operation"},
     mezzanine_jido: {"mezzanine", "jido_integration", "lower.invoke_operation"},
-    mezzanine_execution_plane: {"mezzanine", "execution_plane", "runtime.execute_effect"},
+    mezzanine_execution_plane: {"mezzanine", "execution_plane", "effect.execute"},
     mezzanine_ai_trace: {"mezzanine", "AITrace", "trace.export_events"}
   ]
 
@@ -29,8 +29,8 @@ defmodule GroundPlane.Boundary.Fixtures do
     base_terms = [
       %{
         tenant_id: "tenant-a",
-        operation: "source.fetch_candidates",
-        payload: %{limit: 2, source_role_ref: "role://issue-tracker"},
+        operation: "intake.fetch_candidates",
+        payload: %{limit: 2, role_ref: "role://issue-tracker"},
         trace: %{trace_id: "trace-a", span_id: "span-a"}
       },
       %{
@@ -58,18 +58,18 @@ defmodule GroundPlane.Boundary.Fixtures do
   @spec boundary_envelopes() :: %{atom() => Envelope.t()}
   def boundary_envelopes do
     @boundaries
-    |> Enum.map(fn {key, {source, target, operation}} ->
+    |> Enum.map(fn {key, {origin, target, operation}} ->
       envelope =
         Envelope.new!(%{
-          id: "boundary://#{source}/#{target}/#{operation}",
-          source: source,
+          id: "boundary://#{origin}/#{target}/#{operation}",
+          origin: origin,
           target: target,
           operation: operation,
           tenant_id: "tenant-a",
           payload: %{
             operation_context_ref: "operation-context://tenant-a/run-a",
             role_ref: "role://generic/#{operation}",
-            payload_ref: "payload://tenant-a/#{source}/#{target}"
+            payload_ref: "payload://tenant-a/#{origin}/#{target}"
           },
           trace: %{trace_id: "trace-a", causation_id: "cause-a"},
           metadata: %{transport: "direct-module"}

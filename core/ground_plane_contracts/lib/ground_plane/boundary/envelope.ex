@@ -7,7 +7,7 @@ defmodule GroundPlane.Boundary.Envelope do
 
   @enforce_keys [
     :id,
-    :source,
+    :origin,
     :target,
     :operation,
     :tenant_id,
@@ -15,7 +15,7 @@ defmodule GroundPlane.Boundary.Envelope do
   ]
   defstruct [
     :id,
-    :source,
+    :origin,
     :target,
     :operation,
     :tenant_id,
@@ -29,7 +29,7 @@ defmodule GroundPlane.Boundary.Envelope do
 
   @type t :: %__MODULE__{
           id: String.t(),
-          source: String.t(),
+          origin: String.t(),
           target: String.t(),
           operation: String.t(),
           tenant_id: String.t(),
@@ -45,7 +45,7 @@ defmodule GroundPlane.Boundary.Envelope do
   def new(attrs) when is_map(attrs) or is_list(attrs) do
     envelope = %__MODULE__{
       id: string_value(attrs, :id),
-      source: string_value(attrs, :source),
+      origin: string_value(attrs, :origin),
       target: string_value(attrs, :target),
       operation: string_value(attrs, :operation),
       tenant_id: string_value(attrs, :tenant_id),
@@ -78,7 +78,7 @@ defmodule GroundPlane.Boundary.Envelope do
   def to_map(%__MODULE__{} = envelope) do
     %{
       id: envelope.id,
-      source: envelope.source,
+      origin: envelope.origin,
       target: envelope.target,
       operation: envelope.operation,
       tenant_id: envelope.tenant_id,

@@ -83,7 +83,7 @@ defmodule GroundPlane.Contracts.Fence do
     :process_crash,
     :stream_reconnect,
     :lifecycle_resume,
-    :workflow_resume
+    :orchestration_resume
   ]
 
   @spec from_lease(Lease.t()) :: t()
