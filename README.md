@@ -198,3 +198,34 @@ Expected local contract: `127.0.0.1:7233`, UI `http://127.0.0.1:8233`, namespace
 ## Persistence Documentation
 
 See `docs/persistence.md` for tiers, defaults, adapters, unsupported selections, config examples, restart claims, durability claims, debug sidecar behavior, redaction guarantees, migration or preflight behavior, and no-bypass scope when applicable.
+
+## gn-ten Implementation Guides
+
+GroundPlane is the primitive substrate. It owns reusable refs, ids, leases,
+fences, checkpoints, persistence policy, Postgres helpers, and projection
+helpers that higher repos can consume without inheriting product or provider
+semantics.
+
+Read these repo-specific guides before adding primitives:
+
+- [Generalized Stack Boundary](https://github.com/nshkrdotcom/ground_plane/blob/main/guides/generalized_stack.md)
+- [QC And Operations](https://github.com/nshkrdotcom/ground_plane/blob/main/guides/qc_and_operations.md)
+
+Operational rules:
+
+- Public interfaces are owned by `core/ground_plane_contracts`,
+  `core/execution_fencing`, `core/persistence_policy`,
+  `core/persistence_policy_data_extension`, `core/ground_plane_postgres`, and
+  `core/ground_plane_projection`.
+- GroundPlane may not own product names, provider names, workflow-engine
+  behavior, connector behavior, model behavior, or policy decisions.
+- Provider vocabulary is documentation-only when describing forbidden higher
+  semantics. Primitive code should be nameable without product/provider words.
+- GroundPlane does not own live-provider commands. If a higher proof command
+  using GroundPlane primitives reaches GitHub or Linear, the higher owner must
+  prefix that command with `~/scripts/with_bash_secrets`.
+- Local development uses `mix ci`, package-local tests, and release artifact
+  commands when contract artifacts change.
+- Evidence is emitted through package tests, projection smoke examples,
+  persistence posture docs, Weld/release tracking, StackLab primitive proofs,
+  and downstream artifact receipts.
