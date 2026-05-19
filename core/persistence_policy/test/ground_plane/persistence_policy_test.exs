@@ -122,6 +122,67 @@ defmodule GroundPlane.PersistencePolicyTest do
              })
   end
 
+  test "store capability rejects missing or blank store refs" do
+    assert {:error, {:invalid_store_ref, nil}} =
+             PersistencePolicy.StoreCapability.new(
+               tier: :memory_ephemeral,
+               data_classes: [:all],
+               adapter: :memory
+             )
+
+    assert {:error, {:invalid_store_ref, ""}} =
+             PersistencePolicy.StoreCapability.new(
+               store_ref: "",
+               tier: :memory_ephemeral,
+               data_classes: [:all],
+               adapter: :memory
+             )
+  end
+
+  test "store capability rejects invalid adapters" do
+    assert {:error, {:invalid_adapter, nil}} =
+             PersistencePolicy.StoreCapability.new(
+               store_ref: :memory,
+               tier: :memory_ephemeral,
+               data_classes: [:all]
+             )
+
+    assert {:error, {:invalid_adapter, "memory"}} =
+             PersistencePolicy.StoreCapability.new(
+               store_ref: :memory,
+               tier: :memory_ephemeral,
+               data_classes: [:all],
+               adapter: "memory"
+             )
+  end
+
+  test "store capability validates and converts partitions" do
+    assert {:ok, capability} =
+             PersistencePolicy.StoreCapability.new(
+               store_ref: :memory,
+               tier: :memory_ephemeral,
+               data_classes: [:all],
+               adapter: :memory,
+               partitions: [%{"tenant_ref" => "tenant-1", resource_ref: "resource-1"}]
+             )
+
+    assert [
+             %PersistencePolicy.Partition{
+               tenant_ref: "tenant-1",
+               resource_ref: "resource-1"
+             }
+           ] = capability.partitions
+
+    assert {:error, {:invalid_partition, :bad_partition}} =
+             PersistencePolicy.StoreCapability.new(
+               store_ref: :memory,
+               tier: :memory_ephemeral,
+               data_classes: [:all],
+               adapter: :memory,
+               partitions: [:bad_partition]
+             )
+  end
+
   test "durable profile preflight fails early instead of falling back to memory" do
     profile = PersistencePolicy.resolve!(profile: :integration_postgres)
 

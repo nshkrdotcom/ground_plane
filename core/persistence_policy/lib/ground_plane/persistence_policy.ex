@@ -84,6 +84,41 @@ defmodule GroundPlane.PersistencePolicy do
 
     @spec fields() :: [atom()]
     def fields, do: @fields
+
+    @field_lookup Map.new(@fields, fn field -> {Atom.to_string(field), field} end)
+
+    @spec new(t() | map() | keyword()) :: {:ok, t()} | {:error, term()}
+    def new(%__MODULE__{} = partition), do: {:ok, partition}
+
+    def new(attrs) when is_map(attrs) do
+      attrs
+      |> Enum.reduce_while({:ok, %{}}, &normalize_field/2)
+      |> case do
+        {:ok, normalized_attrs} -> {:ok, struct(__MODULE__, normalized_attrs)}
+        {:error, _reason} = error -> error
+      end
+    end
+
+    def new(attrs) when is_list(attrs) do
+      if Keyword.keyword?(attrs) do
+        attrs |> Map.new() |> new()
+      else
+        {:error, {:invalid_partition, attrs}}
+      end
+    end
+
+    def new(partition), do: {:error, {:invalid_partition, partition}}
+
+    defp normalize_field({field, value}, {:ok, normalized_attrs}) do
+      case field_ref(field) do
+        {:ok, field} -> {:cont, {:ok, Map.put(normalized_attrs, field, value)}}
+        :error -> {:halt, {:error, {:invalid_partition_field, field}}}
+      end
+    end
+
+    defp field_ref(field) when field in @fields, do: {:ok, field}
+    defp field_ref(field) when is_binary(field), do: Map.fetch(@field_lookup, field)
+    defp field_ref(_field), do: :error
   end
 
   defmodule StoreCapability do
@@ -114,23 +149,99 @@ defmodule GroundPlane.PersistencePolicy do
     def new(attrs) do
       attrs = Map.new(attrs)
 
-      with {:ok, tier} <- Tier.validate(value(attrs, :tier)),
-           true <- is_list(value(attrs, :data_classes)) do
+      with {:ok, store_ref} <- validate_store_ref(value(attrs, :store_ref)),
+           {:ok, tier} <- Tier.validate(value(attrs, :tier)),
+           {:ok, data_classes} <- validate_data_classes(value(attrs, :data_classes)),
+           {:ok, adapter} <- validate_adapter(value(attrs, :adapter)),
+           {:ok, partitions} <- validate_partitions(value(attrs, :partitions)) do
         {:ok,
          %__MODULE__{
-           store_ref: value(attrs, :store_ref),
+           store_ref: store_ref,
            tier: tier,
-           data_classes: value(attrs, :data_classes),
-           adapter: value(attrs, :adapter),
+           data_classes: data_classes,
+           adapter: adapter,
            restart_safe?: value(attrs, :restart_safe?) || false,
            durable?: Tier.durable?(tier),
-           partitions: List.wrap(value(attrs, :partitions) || [])
+           partitions: partitions
          }}
       else
-        false -> {:error, {:invalid_store_capability, :data_classes}}
         error -> error
       end
     end
+
+    defp validate_store_ref(store_ref) when is_binary(store_ref) do
+      if String.trim(store_ref) == "" do
+        {:error, {:invalid_store_ref, store_ref}}
+      else
+        {:ok, store_ref}
+      end
+    end
+
+    defp validate_store_ref(store_ref) when is_atom(store_ref) do
+      if valid_symbolic_atom?(store_ref) do
+        {:ok, store_ref}
+      else
+        {:error, {:invalid_store_ref, store_ref}}
+      end
+    end
+
+    defp validate_store_ref(store_ref), do: {:error, {:invalid_store_ref, store_ref}}
+
+    defp validate_data_classes(data_classes) when is_list(data_classes), do: {:ok, data_classes}
+
+    defp validate_data_classes(_data_classes),
+      do: {:error, {:invalid_store_capability, :data_classes}}
+
+    defp validate_adapter(adapter) when is_atom(adapter) do
+      if valid_symbolic_atom?(adapter) do
+        {:ok, adapter}
+      else
+        {:error, {:invalid_adapter, adapter}}
+      end
+    end
+
+    defp validate_adapter(adapter), do: {:error, {:invalid_adapter, adapter}}
+
+    defp validate_partitions(nil), do: {:ok, []}
+    defp validate_partitions([]), do: {:ok, []}
+
+    defp validate_partitions(%Partition{} = partition), do: {:ok, [partition]}
+
+    defp validate_partitions(partitions) when is_list(partitions) do
+      if Keyword.keyword?(partitions) do
+        partitions |> Map.new() |> validate_partitions()
+      else
+        validate_partition_list(partitions)
+      end
+    end
+
+    defp validate_partitions(partition) when is_map(partition) do
+      case Partition.new(partition) do
+        {:ok, partition} -> {:ok, [partition]}
+        {:error, _reason} = error -> error
+      end
+    end
+
+    defp validate_partitions(partition), do: {:error, {:invalid_partition, partition}}
+
+    defp validate_partition_list(partitions) do
+      partitions
+      |> Enum.reduce_while({:ok, []}, &append_partition/2)
+      |> reverse_partitions()
+    end
+
+    defp append_partition(partition, {:ok, partitions}) do
+      case Partition.new(partition) do
+        {:ok, partition} -> {:cont, {:ok, [partition | partitions]}}
+        {:error, _reason} = error -> {:halt, error}
+      end
+    end
+
+    defp reverse_partitions({:ok, partitions}), do: {:ok, Enum.reverse(partitions)}
+    defp reverse_partitions({:error, _reason} = error), do: error
+
+    defp valid_symbolic_atom?(atom),
+      do: atom != nil and atom != true and atom != false and atom != :""
 
     defp value(attrs, field) do
       case Map.fetch(attrs, field) do
