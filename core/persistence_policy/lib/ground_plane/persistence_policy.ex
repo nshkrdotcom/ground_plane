@@ -132,7 +132,12 @@ defmodule GroundPlane.PersistencePolicy do
       end
     end
 
-    defp value(attrs, field), do: Map.get(attrs, field) || Map.get(attrs, Atom.to_string(field))
+    defp value(attrs, field) do
+      case Map.fetch(attrs, field) do
+        {:ok, value} -> value
+        :error -> Map.get(attrs, Atom.to_string(field))
+      end
+    end
   end
 
   defmodule StoreSet do
@@ -288,7 +293,12 @@ defmodule GroundPlane.PersistencePolicy do
         |> Enum.reverse()
       end
 
-      defp value(attrs, field), do: Map.get(attrs, field) || Map.get(attrs, Atom.to_string(field))
+      defp value(attrs, field) do
+        case Map.fetch(attrs, field) do
+          {:ok, value} -> value
+          :error -> Map.get(attrs, Atom.to_string(field))
+        end
+      end
     end
   end
 
@@ -329,7 +339,13 @@ defmodule GroundPlane.PersistencePolicy do
   @spec resolve(keyword() | map()) :: {:ok, Profile.t()} | {:error, term()}
   def resolve(attrs) do
     attrs = normalize_attrs(attrs)
-    profile_id = first_present_profile(attrs) || :mickey_mouse
+
+    profile_id =
+      case first_present_profile(attrs) do
+        nil -> :mickey_mouse
+        profile_id -> profile_id
+      end
+
     built_in_profile(profile_id)
   end
 
@@ -503,5 +519,10 @@ defmodule GroundPlane.PersistencePolicy do
   defp present?(value) when is_binary(value), do: String.trim(value) != ""
   defp present?(value), do: not is_nil(value)
 
-  defp value(attrs, field), do: Map.get(attrs, field) || Map.get(attrs, Atom.to_string(field))
+  defp value(attrs, field) do
+    case Map.fetch(attrs, field) do
+      {:ok, value} -> value
+      :error -> Map.get(attrs, Atom.to_string(field))
+    end
+  end
 end

@@ -59,6 +59,69 @@ defmodule GroundPlane.PersistencePolicyTest do
     assert fallback_profile.id == :memory_debug
   end
 
+  test "resolver preserves false and nil atom-key precedence over string fallback" do
+    assert {:error, {:unsupported_profile, false}} =
+             PersistencePolicy.resolve(%{"profile" => :mickey_mouse, profile: false})
+
+    assert {:ok, profile} =
+             PersistencePolicy.resolve(%{
+               "profile" => :memory_debug,
+               profile: nil,
+               global_profile: :integration_postgres
+             })
+
+    assert profile.id == :integration_postgres
+  end
+
+  test "resolver handles empty string and string-key profile values explicitly" do
+    assert {:ok, profile} = PersistencePolicy.resolve(%{"profile" => :memory_debug})
+    assert profile.id == :memory_debug
+
+    assert {:ok, fallback_profile} =
+             PersistencePolicy.resolve(%{
+               "profile" => "",
+               "global_profile" => :integration_postgres
+             })
+
+    assert fallback_profile.id == :integration_postgres
+  end
+
+  test "store capability preserves explicit false atom and string values" do
+    assert {:ok, atom_key_capability} =
+             PersistencePolicy.StoreCapability.new(%{
+               "restart_safe?" => true,
+               store_ref: :memory,
+               tier: :memory_ephemeral,
+               data_classes: [:all],
+               adapter: :memory,
+               restart_safe?: false
+             })
+
+    refute atom_key_capability.restart_safe?
+
+    assert {:ok, string_key_capability} =
+             PersistencePolicy.StoreCapability.new(%{
+               "store_ref" => :memory,
+               "tier" => :memory_ephemeral,
+               "data_classes" => [:all],
+               "adapter" => :memory,
+               "restart_safe?" => false
+             })
+
+    refute string_key_capability.restart_safe?
+  end
+
+  test "store capability preserves nil atom keys instead of falling through to string keys" do
+    assert {:error, {:unsupported_tier, nil}} =
+             PersistencePolicy.StoreCapability.new(%{
+               "tier" => :memory_ephemeral,
+               store_ref: :memory,
+               tier: nil,
+               data_classes: [:all],
+               adapter: :memory
+             })
+  end
+
   test "durable profile preflight fails early instead of falling back to memory" do
     profile = PersistencePolicy.resolve!(profile: :integration_postgres)
 
