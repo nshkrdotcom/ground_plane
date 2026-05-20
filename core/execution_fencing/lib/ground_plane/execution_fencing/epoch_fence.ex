@@ -2,6 +2,7 @@ defmodule GroundPlane.ExecutionFencing.EpochFence do
   @moduledoc false
 
   alias GroundPlane.Contracts.PersistencePosture
+  alias GroundPlane.ExecutionFencing.EpochCompatibilityPolicy
   alias GroundPlane.ExecutionFencing.Validation
 
   @required_refs [:artifact_ref, :epoch_ref]
@@ -15,27 +16,25 @@ defmodule GroundPlane.ExecutionFencing.EpochFence do
     with :ok <- Validation.require_non_empty_refs(attrs, @required_refs),
          {:ok, expected_epoch} <- Validation.fetch_non_negative_integer(attrs, :expected_epoch),
          {:ok, observed_epoch} <- Validation.fetch_non_negative_integer(attrs, :observed_epoch),
-         :ok <- ensure_family(attrs, family),
+         :ok <- ensure_family(attrs, family, policy),
          :ok <- ensure_not_revoked(attrs, revoked_reason, now),
          :ok <- ensure_epoch_current(attrs, expected_epoch, observed_epoch, stale_reason, now) do
       {:ok, receipt(attrs, family, expected_epoch, observed_epoch, now)}
     end
   end
 
-  defp ensure_family(attrs, family) do
+  defp ensure_family(attrs, family, policy) do
     actual = Map.get(attrs, :fence_family)
 
-    if is_nil(actual) or actual == family or compatible_family?(actual, family) do
+    compatibility_policy =
+      Map.get(policy, :compatible_families, EpochCompatibilityPolicy.default())
+
+    if EpochCompatibilityPolicy.compatible?(actual, family, compatibility_policy) do
       :ok
     else
       {:error, {:fence_family_mismatch, %{expected: family, actual: actual, redacted: true}}}
     end
   end
-
-  defp compatible_family?(:checkpoint, :checkpoint_epoch), do: true
-  defp compatible_family?(:replay, :replay_epoch), do: true
-  defp compatible_family?(:promotion, :promotion_epoch), do: true
-  defp compatible_family?(_actual, _family), do: false
 
   defp ensure_not_revoked(attrs, reason, now) do
     case Map.get(attrs, :revoked_at) do

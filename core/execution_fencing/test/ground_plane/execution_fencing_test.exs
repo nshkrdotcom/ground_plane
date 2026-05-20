@@ -4,6 +4,7 @@ defmodule GroundPlane.ExecutionFencingTest do
   alias GroundPlane.ExecutionFencing
   alias GroundPlane.ExecutionFencing.CheckpointEpoch
   alias GroundPlane.ExecutionFencing.EndpointLease
+  alias GroundPlane.ExecutionFencing.EpochFence
   alias GroundPlane.ExecutionFencing.ResourcePoolLease
   alias GroundPlane.ExecutionFencing.ReplayEpoch
   alias GroundPlane.ExecutionFencing.RunLock
@@ -97,6 +98,38 @@ defmodule GroundPlane.ExecutionFencingTest do
     assert durable.fence_receipts.endpoint_lease.persistence_posture.durable? == true
   end
 
+  test "epoch compatibility policy denies unknown aliases unless policy admits them" do
+    now = DateTime.from_unix!(1_700_000_000)
+    default_policy = epoch_policy(:checkpoint_epoch)
+
+    assert {:ok, default_alias} =
+             EpochFence.authorize(
+               %{epoch(:checkpoint) | fence_family: :checkpoint},
+               now,
+               default_policy
+             )
+
+    assert default_alias.fence_family == :checkpoint_epoch
+
+    unknown_attrs = %{epoch(:checkpoint) | fence_family: :checkpoint_shadow}
+
+    assert {:error,
+            {:fence_family_mismatch,
+             %{expected: :checkpoint_epoch, actual: :checkpoint_shadow, redacted: true}}} =
+             EpochFence.authorize(unknown_attrs, now, default_policy)
+
+    assert {:ok, custom_alias} =
+             EpochFence.authorize(
+               unknown_attrs,
+               now,
+               Map.put(default_policy, :compatible_families, %{
+                 checkpoint_epoch: [:checkpoint_shadow]
+               })
+             )
+
+    assert custom_alias.fence_family == :checkpoint_epoch
+  end
+
   defp run_lock do
     %{
       execution_ref: "execution://adaptive/run-1",
@@ -114,6 +147,14 @@ defmodule GroundPlane.ExecutionFencingTest do
       expected_epoch: 3,
       observed_epoch: 3,
       epoch_ref: "epoch://adaptive/run-1/#{kind}/3"
+    }
+  end
+
+  defp epoch_policy(family) do
+    %{
+      family: family,
+      stale_reason: :stale_checkpoint_epoch,
+      revoked_reason: :checkpoint_epoch_revoked
     }
   end
 
