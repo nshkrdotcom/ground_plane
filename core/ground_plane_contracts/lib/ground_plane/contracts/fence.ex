@@ -3,10 +3,20 @@ defmodule GroundPlane.Contracts.Fence do
   Struct and comparison helpers for fenced ownership.
   """
 
+  alias __MODULE__.AuthorityScope
+  alias __MODULE__.CredentialScope
+  alias __MODULE__.Epoch
+  alias __MODULE__.Identity
+  alias __MODULE__.PersistenceScope
   alias GroundPlane.Contracts.Lease
   alias GroundPlane.Contracts.PersistencePosture
 
   defstruct [
+    :identity,
+    :epoch_ref,
+    :credential_scope,
+    :authority_scope,
+    :persistence_scope,
     :resource,
     :holder,
     :lease_id,
@@ -30,6 +40,11 @@ defmodule GroundPlane.Contracts.Fence do
   ]
 
   @type t :: %__MODULE__{
+          identity: Identity.t() | nil,
+          epoch_ref: Epoch.t() | nil,
+          credential_scope: CredentialScope.t() | nil,
+          authority_scope: AuthorityScope.t() | nil,
+          persistence_scope: PersistenceScope.t() | nil,
           resource: String.t(),
           holder: String.t(),
           lease_id: String.t(),
@@ -52,65 +67,36 @@ defmodule GroundPlane.Contracts.Fence do
           persistence_posture: map() | nil
         }
 
-  @credential_scope_checks [
-    tenant_id: :tenant_mismatch,
-    resource_family: :resource_family_mismatch,
-    resource_account_ref: :resource_account_mismatch,
-    resource_instance_ref: :resource_instance_mismatch,
-    credential_handle_ref: :credential_handle_mismatch,
-    credential_lease_ref: :credential_lease_mismatch,
-    operation_class: :operation_class_mismatch,
-    target_ref: :target_mismatch,
-    attach_grant_ref: :attach_grant_mismatch,
-    operation_policy_ref: :operation_policy_mismatch,
-    installation_revision_ref: :stale_installation_revision,
-    policy_revision_ref: :stale_policy_revision,
-    target_grant_revision: :stale_target_grant,
-    rotation_epoch: :rotation_epoch_mismatch,
-    fence_token: :fence_token_mismatch
-  ]
-  @retry_required_context [
-    :idempotency_key,
-    :dispatch_ref,
-    :active_execution_ref,
-    :current_execution_ref,
-    :retry_authority_ref,
-    :materialization_epoch
-  ]
-  @restart_revalidation_events [
-    :target_detach,
-    :sandbox_restart,
-    :process_crash,
-    :stream_reconnect,
-    :lifecycle_resume,
-    :orchestration_resume
-  ]
+  @spec new(map() | keyword()) :: {:ok, t()} | {:error, term()}
+  def new(attrs) when is_list(attrs), do: attrs |> Map.new() |> new()
+
+  def new(attrs) when is_map(attrs) do
+    with {:ok, identity} <- Identity.new(attrs),
+         {:ok, epoch} <- Epoch.new(attrs),
+         {:ok, credential_scope} <- CredentialScope.new(attrs),
+         {:ok, authority_scope} <- AuthorityScope.new(attrs),
+         {:ok, persistence_scope} <- PersistenceScope.new(attrs) do
+      {:ok, compose(identity, epoch, credential_scope, authority_scope, persistence_scope)}
+    end
+  end
+
+  @spec new!(map() | keyword()) :: t()
+  def new!(attrs) do
+    case new(attrs) do
+      {:ok, fence} -> fence
+      {:error, reason} -> raise ArgumentError, message: inspect(reason)
+    end
+  end
 
   @spec from_lease(Lease.t()) :: t()
   def from_lease(%Lease{} = lease) do
-    %__MODULE__{
-      resource: lease.resource,
-      holder: lease.holder,
-      lease_id: lease.lease_id,
-      epoch: lease.epoch,
-      tenant_id: lease.tenant_id,
-      resource_family: lease.resource_family,
-      resource_account_ref: lease.resource_account_ref,
-      resource_instance_ref: lease.resource_instance_ref,
-      credential_handle_ref: lease.credential_handle_ref,
-      credential_lease_ref: lease.credential_lease_ref,
-      operation_class: lease.operation_class,
-      target_ref: lease.target_ref,
-      attach_grant_ref: lease.attach_grant_ref,
-      operation_policy_ref: lease.operation_policy_ref,
-      installation_revision_ref: lease.installation_revision_ref,
-      policy_revision_ref: lease.policy_revision_ref,
-      target_grant_revision: lease.target_grant_revision,
-      rotation_epoch: lease.rotation_epoch,
-      fence_token: lease.fence_token,
-      persistence_posture:
-        lease.persistence_posture || PersistencePosture.memory(:credential_lease_fence)
-    }
+    lease
+    |> Map.from_struct()
+    |> Map.put(
+      :persistence_posture,
+      lease.persistence_posture || PersistencePosture.memory(:credential_lease_fence)
+    )
+    |> new!()
   end
 
   @spec newer_than?(t(), t()) :: boolean()
@@ -248,7 +234,7 @@ defmodule GroundPlane.Contracts.Fence do
   end
 
   defp first_scope_mismatch(%Lease{} = lease, values) do
-    Enum.find(@credential_scope_checks, fn {field, _reason} ->
+    Enum.find(scope_checks(), fn {field, _reason} ->
       expected = Map.fetch!(Map.from_struct(lease), field)
       actual = Map.get(values, field, Map.get(values, Atom.to_string(field)))
 
@@ -258,7 +244,7 @@ defmodule GroundPlane.Contracts.Fence do
 
   defp ensure_retry_context(%Lease{} = lease, %__MODULE__{} = fence, context, now) do
     missing =
-      Enum.reject(@retry_required_context, fn field ->
+      Enum.reject(AuthorityScope.retry_required_context(), fn field ->
         present?(context_value(context, field))
       end)
 
@@ -316,17 +302,56 @@ defmodule GroundPlane.Contracts.Fence do
       nil ->
         :ok
 
-      event when event in @restart_revalidation_events ->
-        :ok
+      event when is_atom(event) ->
+        if AuthorityScope.restart_revalidation_event?(event) do
+          :ok
+        else
+          unsupported_restart_event(lease, fence, context, now, event)
+        end
 
       event ->
-        details =
-          lease
-          |> credential_details(fence, now, :restart_event)
-          |> Map.put(:restart_event, event)
-
-        {:error, {:unsupported_restart_revalidation_event, details}}
+        unsupported_restart_event(lease, fence, context, now, event)
     end
+  end
+
+  defp unsupported_restart_event(%Lease{} = lease, %__MODULE__{} = fence, _context, now, event) do
+    details =
+      lease
+      |> credential_details(fence, now, :restart_event)
+      |> Map.put(:restart_event, event)
+
+    {:error, {:unsupported_restart_revalidation_event, details}}
+  end
+
+  defp scope_checks do
+    CredentialScope.checks() ++ AuthorityScope.checks() ++ Epoch.scope_checks()
+  end
+
+  defp compose(
+         %Identity{} = identity,
+         %Epoch{} = epoch,
+         %CredentialScope{} = credential_scope,
+         %AuthorityScope{} = authority_scope,
+         %PersistenceScope{} = persistence_scope
+       ) do
+    attrs =
+      identity
+      |> Identity.to_map()
+      |> Map.merge(Epoch.to_map(epoch))
+      |> Map.merge(CredentialScope.to_map(credential_scope))
+      |> Map.merge(AuthorityScope.to_map(authority_scope))
+      |> Map.merge(PersistenceScope.to_map(persistence_scope))
+
+    struct(
+      __MODULE__,
+      Map.merge(attrs, %{
+        identity: identity,
+        epoch_ref: epoch,
+        credential_scope: credential_scope,
+        authority_scope: authority_scope,
+        persistence_scope: persistence_scope
+      })
+    )
   end
 
   defp context_value(context, field) do

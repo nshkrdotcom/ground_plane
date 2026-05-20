@@ -58,7 +58,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
                expires_at: later
              })
 
-    active_fence = Fence.from_lease(active_lease)
+    assert %Fence{} = active_fence = Fence.from_lease(active_lease)
 
     assert {:ok, %{lease_id: "lease_active", lease_epoch: 4, fence_epoch: 4}} =
              Fence.authorize_restart_reuse(active_lease, active_fence, now)
@@ -117,7 +117,8 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
                    expires_at: DateTime.add(now, 30, :second)
                  })
 
-        mismatched_fence = %Fence{Fence.from_lease(lease) | holder: "node-b"}
+        assert %Fence{} = fence = Fence.from_lease(lease)
+        mismatched_fence = %Fence{fence | holder: "node-b"}
 
         assert {:error, {:lease_holder_mismatch_after_restart, details}} =
                  Fence.authorize_restart_reuse(lease, mismatched_fence, now)
@@ -170,7 +171,7 @@ defmodule GroundPlane.Contracts.LeaseAndFenceTest do
     now = DateTime.from_unix!(1_700_000_000)
 
     assert {:ok, lease} = Lease.new(credential_lease_attrs(now))
-    fence = Fence.from_lease(lease)
+    assert %Fence{} = fence = Fence.from_lease(lease)
 
     assert {:ok, receipt} =
              Fence.authorize_credential_materialization(
