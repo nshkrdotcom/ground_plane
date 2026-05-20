@@ -145,6 +145,7 @@ defmodule GroundPlane.Workspace.MixProject do
         "docs/contracts.md",
         "docs/postgres_helpers.md",
         "docs/projection.md",
+        "guides/code_smell_remediation.md",
         "CHANGELOG.md",
         "LICENSE"
       ],
@@ -152,6 +153,7 @@ defmodule GroundPlane.Workspace.MixProject do
         Overview: ["README.md", "docs/overview.md"],
         Architecture: ["docs/layout.md", "docs/contracts.md"],
         Helpers: ["docs/postgres_helpers.md", "docs/projection.md"],
+        Guides: ["guides/code_smell_remediation.md"],
         Project: ["CHANGELOG.md", "LICENSE"]
       ]
     ]

@@ -66,6 +66,13 @@ live provider credential dependency, and no debug sidecar dependency.
 Workspace root established. The internal packages are intentionally small and
 generic.
 
+## Implementation Notes
+
+Maintainers should read
+[Code Smell Remediation](guides/code_smell_remediation.md) before changing
+persistence policy contracts, store capability constructors, false/nil value
+semantics, fence values, or epoch compatibility policy.
+
 ## Current Delivery State
 
 Active packages:
