@@ -69,7 +69,7 @@ generic.
 ## Implementation Notes
 
 Maintainers should read
-[Code Smell Remediation](guides/code_smell_remediation.md) before changing
+[Code Smell Remediation](https://github.com/nshkrdotcom/ground_plane/blob/main/guides/code_smell_remediation.md) before changing
 persistence policy contracts, store capability constructors, false/nil value
 semantics, fence values, or epoch compatibility policy.
 
