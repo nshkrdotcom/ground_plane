@@ -7,8 +7,11 @@ Phase 6 boundary contracts are owned here. `GroundPlane.Boundary.Codec` provides
 canonical encoding, decoding, and SHA-256 digests for boundary-significant
 payloads. `GroundPlane.Boundary.Envelope`, `DispatchResult`, and `Protocol`
 define direct-module cross-plane request/response contracts that are
-serializable today and ready for a future governed remote transport. The codec
-rejects PIDs, references, ports, functions, streams, tasks, raw credential keys,
+serializable today and ready for a future governed remote transport.
+`GroundPlane.BoundaryProtocol.CommandEnvelope` is the governed-operation
+boundary wrapper for GAOP-style command dispatch and maps the stack's `_ref`
+field vocabulary to GAOP RFC-0002 names at external edges. The codec rejects
+PIDs, references, ports, functions, streams, tasks, raw credential keys,
 ambiguous atom/binary keys, and unsupported structs.
 
 Phase 14 restart authorization is owned here. `GroundPlane.Contracts.Fence`

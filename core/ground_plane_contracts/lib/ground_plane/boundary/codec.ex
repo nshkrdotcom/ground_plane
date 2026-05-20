@@ -9,6 +9,7 @@ defmodule GroundPlane.Boundary.Codec do
 
   alias GroundPlane.Boundary.DispatchResult
   alias GroundPlane.Boundary.Envelope
+  alias GroundPlane.BoundaryProtocol.CommandEnvelope
 
   @sensitive_keys MapSet.new([
                     "access_token",
@@ -75,6 +76,9 @@ defmodule GroundPlane.Boundary.Codec do
   end
 
   @spec normalize(term()) :: {:ok, canonical_value()} | {:error, term()}
+  def normalize(%CommandEnvelope{} = envelope),
+    do: envelope |> CommandEnvelope.to_map() |> normalize()
+
   def normalize(%Envelope{} = envelope), do: envelope |> Envelope.to_map() |> normalize()
   def normalize(%DispatchResult{} = result), do: result |> DispatchResult.to_map() |> normalize()
   def normalize(nil), do: {:ok, nil}
