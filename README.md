@@ -96,6 +96,20 @@ Recent work added long-running execution fencing, persistence-policy packages,
 persistence posture docs, credential lease fabric primitives, revoked-lease
 restart fencing, and dependency-source/Weld gates.
 
+The Synapse governed-effect lift uses GroundPlane only for reusable boundary
+protocol primitives. `GroundPlane.BoundaryProtocol.CommandEnvelope` is the
+canonical serializable command envelope for cross-plane effect requests, and
+`GroundPlane.Boundary.Codec` provides deterministic encode/hash support for
+integrity checks. GroundPlane still does not own effect lifecycle, authority
+policy, product status, connector dispatch, or diagnostic lane semantics.
+
+The cross-stack proof that consumes these primitives is owned by StackLab:
+
+```bash
+cd /home/home/p/g/n/stack_lab
+MIX_ENV=test mix stack_lab.synapse.staged_live.v1 --json
+```
+
 ## Primitive Admission Rule
 
 Before adding a new primitive, check that it can be named and tested without
