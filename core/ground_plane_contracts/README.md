@@ -34,6 +34,8 @@ material, process payloads, or workflow histories.
   `repo://<owner>/<repo>` references.
 - `GroundPlane.Contracts.ArtifactRef` owns canonical
   `artifact://<owner>/<repo>/<artifact>` references.
+- `GroundPlane.Contracts.ContentAddress` owns primitive `sha256:` content
+  address facts with canonical codec, byte-size, and media-type metadata.
 - `GroundPlane.Contracts.WorkspaceRef` owns canonical
   `workspace://<owner>/<workspace>` references.
 
