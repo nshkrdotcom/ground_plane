@@ -14,12 +14,19 @@ defmodule GroundPlane.Boundary.Codec do
   @sensitive_keys MapSet.new([
                     "access_token",
                     "api_key",
+                    "authorization",
+                    "bearer",
+                    "client_id",
                     "client_secret",
+                    "cookie",
                     "credential_material",
                     "material",
+                    "oauth_token",
+                    "password",
                     "private_key",
                     "raw_credential",
                     "refresh_token",
+                    "session_id",
                     "secret",
                     "token",
                     "webhook_secret"
@@ -144,12 +151,19 @@ defmodule GroundPlane.Boundary.Codec do
   defp canonical_key(_key), do: {:error, :unsupported_boundary_map_key}
 
   defp reject_sensitive_key(key) do
-    if MapSet.member?(@sensitive_keys, key) do
+    normalized_key = String.downcase(key)
+
+    if sensitive_key?(normalized_key) do
       {:error, {:raw_credential_key_forbidden, key}}
     else
       :ok
     end
   end
+
+  defp sensitive_key?("raw"), do: true
+
+  defp sensitive_key?(key),
+    do: MapSet.member?(@sensitive_keys, key) or String.starts_with?(key, "raw_")
 
   defp reject_duplicate_key(map, key) do
     if Map.has_key?(map, key) do

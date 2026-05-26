@@ -39,6 +39,13 @@ defmodule GroundPlane.Boundary.CodecTest do
     assert {:error, {:raw_credential_key_forbidden, "api_key"}} = Codec.encode(term)
   end
 
+  test "rejects broad credential, session, and raw-prefixed boundary keys" do
+    for key <- ["authorization", "cookie", "session_id", "oauth_token", "client_id", "raw_prompt"] do
+      assert {:error, {:raw_credential_key_forbidden, ^key}} =
+               Codec.encode(%{"tenant_id" => "tenant-a", key => "secret-ish"})
+    end
+  end
+
   test "rejects local runtime values" do
     negatives = Fixtures.negative_terms()
 
