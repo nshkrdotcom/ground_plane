@@ -21,6 +21,12 @@ Primary package groups:
 - `core/ground_plane_projection`;
 - `examples/projection_smoke`.
 
+`GroundPlane.Boundary.Codec` is the canonical encoder for
+boundary-significant hash inputs. It accepts only serializable bounded data and
+rejects raw prompt/provider/memory fields plus common credential, session, and
+token keys. Use it for portable integrity evidence; do not use `inspect/1`,
+`Jason.encode!/1`, or `:erlang.term_to_binary/1` directly as stack hash input.
+
 ## Dependency Rules
 
 Allowed dependencies:

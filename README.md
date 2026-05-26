@@ -103,6 +103,13 @@ canonical serializable command envelope for cross-plane effect requests, and
 integrity checks. GroundPlane still does not own effect lifecycle, authority
 policy, product status, connector dispatch, or diagnostic lane semantics.
 
+The NSHKR cleanup pass hardened `GroundPlane.Boundary.Codec` as the canonical
+boundary encoder for stack-significant hashes. Boundary metadata now rejects
+`raw`/`raw_*` fields and common credential, authorization, session, and token
+keys before encoding. Higher owners should pass refs, hashes, leases, and
+bounded envelopes through GroundPlane codecs rather than serializing raw
+payloads or secret-shaped maps.
+
 The cross-stack proof that consumes these primitives is owned by StackLab:
 
 ```bash

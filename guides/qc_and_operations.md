@@ -21,6 +21,8 @@ GroundPlane changes must keep these obligations green:
 - Weld/release artifact checks when public packages change;
 - StackLab artifact ledger and primitive posture checks when downstream
   contracts change;
+- boundary codec rejection fixtures for `raw`/`raw_*`, credential,
+  authorization, session, and token-shaped metadata keys;
 - no Regex usage in touched code/tests;
 - no dynamic atom construction from runtime input;
 - no unsupervised process starts.
