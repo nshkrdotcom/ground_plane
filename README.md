@@ -257,3 +257,25 @@ Operational rules:
 - Evidence is emitted through package tests, projection smoke examples,
   persistence posture docs, Weld/release tracking, StackLab primitive proofs,
   and downstream artifact receipts.
+
+## Chassis Boundary Codec / Fence Usage
+
+Chassis Evolution and the Host Daemon consume
+`GroundPlane.Boundary.Codec.encode!/1`,
+`GroundPlane.Contracts.Fence`, and
+`GroundPlane.Contracts.Checkpoint` for Ring 0 envelopes, idempotency keys,
+rollback points, receipt hashes, and restart-safe handoff. Chassis uses those
+primitives to prove that a deployment, candidate swap, model materialization,
+or tensor reload request can be encoded deterministically without carrying
+unsafe process terms, raw credentials, or mutable runtime state as authority.
+
+The Chassis usage is documented in
+`../j/jido_brainstorm/nshkrdotcom/docs/20260529/chassis_impl/0520_ground_plane_and_boundary_contracts_spec.md`.
+
+## Chassis Consumes GroundPlane Primitives
+
+Chassis is a consumer, not a re-implementer. GroundPlane owns generic codec,
+fence, checkpoint, lease, persistence, and projection primitives; Chassis
+binds those primitives to spatial-plane receipts and substrate lifecycle
+without adding product, provider, workflow, or policy semantics to
+GroundPlane.
