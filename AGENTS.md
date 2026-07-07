@@ -45,6 +45,19 @@ Do not invent raw `temporal server start-dev` commands for normal work. Do not r
 - Runtime/deployment env reads belong in `config/runtime.exs` or a `Config.Provider`.
 - Mix tasks, examples, and harnesses should accept explicit flags, app config, or caller-supplied env maps instead of reading or mutating process env.
 
+## Design intent — cross-node substrate
+
+- These primitives (refs, ids, fences, leases, checkpoints) are the substrate
+  that must stay valid **across the node boundary** in the target architecture,
+  where Execution Plane runs as a separate, hard-isolated effect node (see
+  execution_plane/AGENTS.md → *Design Intent — Effect Isolation*). A ref, lease,
+  or fence minted on the governance node must remain meaningful and enforceable
+  when the effect executes on a different node.
+- Keep primitives node-portable and free of local-process assumptions. That
+  portability is what makes effect isolation coherent rather than just a
+  deployment detail — the boundary between deciding and doing can only be
+  hardened if identity, fencing, and leasing survive the crossing.
+
 <!-- gn-ten:repo-agent:start repo=ground_plane source_sha=ab276c0640772b73065ab12bf05d77be51f1bb67 -->
 # ground_plane Agent Instructions Draft
 
