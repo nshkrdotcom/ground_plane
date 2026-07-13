@@ -31,6 +31,7 @@ defmodule GroundPlane.Boundary.Codec do
                     "token",
                     "webhook_secret"
                   ])
+  @safe_raw_metadata_keys MapSet.new(["raw_process_state_persistence?"])
 
   @type canonical_value ::
           nil
@@ -162,8 +163,10 @@ defmodule GroundPlane.Boundary.Codec do
 
   defp sensitive_key?("raw"), do: true
 
-  defp sensitive_key?(key),
-    do: MapSet.member?(@sensitive_keys, key) or String.starts_with?(key, "raw_")
+  defp sensitive_key?(key) do
+    not MapSet.member?(@safe_raw_metadata_keys, key) and
+      (MapSet.member?(@sensitive_keys, key) or String.starts_with?(key, "raw_"))
+  end
 
   defp reject_duplicate_key(map, key) do
     if Map.has_key?(map, key) do

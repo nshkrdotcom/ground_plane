@@ -46,6 +46,17 @@ defmodule GroundPlane.Boundary.CodecTest do
     end
   end
 
+  test "allows the ref-only raw process persistence posture flag" do
+    posture = %{
+      "persistence_profile_ref" => "persistence-profile://mickey_mouse",
+      "raw_process_state_persistence?" => false
+    }
+
+    assert {:ok, encoded} = Codec.encode(posture)
+
+    assert Codec.decode!(encoded) == posture
+  end
+
   test "rejects local runtime values" do
     negatives = Fixtures.negative_terms()
 
