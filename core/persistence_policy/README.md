@@ -11,6 +11,19 @@ This package does not depend on Ecto, AshPostgres, Temporal, object stores,
 external SDKs, higher-layer repos, or optional external substrates. Adapter packages
 own their own schemas, migrations, and durable preflights.
 
+## Installation
+
+Add the package from Hex after 0.1.0 is published:
+
+```elixir
+def deps do
+  [{:ground_plane_persistence_policy, "~> 0.1.0"}]
+end
+```
+
+See `guides/installation.md` for source-consumer guidance before publication.
+The package ownership boundary is documented in `guides/ownership.md`.
+
 ## Profiles
 
 Profile resolution is pure data. Callers pass profile hints from their own

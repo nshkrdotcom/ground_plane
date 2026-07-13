@@ -80,7 +80,8 @@ defmodule GroundPlane.Workspace.MixProject do
         "monorepo.credo --strict",
         "monorepo.dialyzer",
         "monorepo.docs",
-        "weld.verify"
+        "weld.verify --artifact ground_plane_contracts",
+        "weld.verify --artifact ground_plane_persistence_policy"
       ],
       "docs.root": ["docs"]
     ] ++ monorepo_aliases

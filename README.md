@@ -179,18 +179,23 @@ The project targets Elixir `~> 1.19` and Erlang/OTP `28`.
 mix ci
 ```
 
-The welded `ground_plane_contracts` artifact is tracked through the prepared
-bundle flow:
+The two public Ground Plane leaves use independent Weld artifacts. Select the
+artifact explicitly because the manifest exposes more than one:
 
 ```bash
-mix release.prepare
-mix release.track
-mix release.archive
+mix weld.verify --artifact ground_plane_contracts
+mix weld.verify --artifact ground_plane_persistence_policy
+mix release.prepare --artifact ground_plane_contracts
+mix release.prepare --artifact ground_plane_persistence_policy
 ```
 
-`mix release.track` updates the orphan-backed
-`projection/ground_plane_contracts` branch so downstream repos can pin a real
-generated-source ref before any formal release boundary exists.
+The generated package trees and prepared bundles are inspection surfaces.
+Publication remains a human-owned Hex action. Optional durable projections use
+`mix release.track --artifact ground_plane_contracts` and
+`mix release.track --artifact ground_plane_persistence_policy`, producing
+`projection/ground_plane_contracts` and
+`projection/ground_plane_persistence_policy`. Run
+`mix release.archive --artifact <artifact>` only after publication is verified.
 
 ## Documentation
 

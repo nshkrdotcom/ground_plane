@@ -9,6 +9,9 @@ and this project intends to follow [Semantic Versioning](https://semver.org/spec
 
 ### Added
 
+- Prepared independent 0.1.0 Hex packages and Weld verification artifacts for
+  `ground_plane_contracts` and `ground_plane_persistence_policy`.
+
 - Initial Elixir project scaffold.
 - Starter README, HexDocs configuration, and documentation menu.
 - MIT license, CI workflow, and repository metadata.

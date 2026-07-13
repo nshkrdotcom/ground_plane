@@ -19,15 +19,17 @@ ambient provider credentials to select an adapter, tenant, target, or
 publication destination. The adapter module, publication metadata, tenant refs,
 and target refs must be explicit caller-owned values.
 
-The workspace tracks the welded `ground_plane_contracts` artifact through the
-prepared bundle flow:
+The workspace exposes independent Weld artifacts for the two public lower
+leaves. Select each artifact explicitly during preparation:
 
 ```bash
-mix release.prepare
-mix release.track
-mix release.archive
+mix release.prepare --artifact ground_plane_contracts
+mix release.prepare --artifact ground_plane_persistence_policy
 ```
 
-`mix release.track` updates the orphan-backed
-`projection/ground_plane_contracts` branch so downstream repos can pin a real
-generated-source ref before any formal release boundary exists.
+Optional `mix release.track --artifact <artifact>` commands update the
+orphan-backed `projection/ground_plane_contracts` and
+`projection/ground_plane_persistence_policy` branches. Those branches are
+generated-source references, not publication receipts. Run
+`mix release.archive --artifact <artifact>` only after the corresponding Hex
+publication has been independently verified.

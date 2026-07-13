@@ -3,6 +3,19 @@
 Pure shared lower contract helpers for ids, repository refs, artifact refs,
 handoff states, leases, fences, and checkpoints.
 
+## Installation
+
+Add the package from Hex after 0.1.0 is published:
+
+```elixir
+def deps do
+  [{:ground_plane_contracts, "~> 0.1.0"}]
+end
+```
+
+See `guides/installation.md` for source-consumer guidance before publication.
+The package ownership boundary is documented in `guides/ownership.md`.
+
 Phase 6 boundary contracts are owned here. `GroundPlane.Boundary.Codec` provides
 canonical encoding, decoding, and SHA-256 digests for boundary-significant
 payloads. `GroundPlane.Boundary.Envelope`, `DispatchResult`, and `Protocol`

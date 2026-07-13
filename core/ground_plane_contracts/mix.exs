@@ -1,17 +1,23 @@
 defmodule GroundPlane.Contracts.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+  @source_url "https://github.com/nshkrdotcom/ground_plane"
+
   def project do
     [
       app: :ground_plane_contracts,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.19",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
+      package: package(),
       dialyzer: dialyzer(),
       name: "GroundPlane Contracts",
-      description: "Pure shared lower contracts for the GroundPlane workspace"
+      description: "Pure shared lower contracts for the GroundPlane workspace",
+      source_url: @source_url,
+      homepage_url: @source_url
     ]
   end
 
@@ -41,7 +47,28 @@ defmodule GroundPlane.Contracts.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md"]
+      source_ref: "ground_plane_contracts-v#{@version}",
+      source_url: @source_url,
+      extras: [
+        "README.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "guides/installation.md",
+        "guides/ownership.md"
+      ]
+    ]
+  end
+
+  defp package do
+    [
+      name: "ground_plane_contracts",
+      licenses: ["MIT"],
+      maintainers: ["nshkrdotcom"],
+      links: %{
+        "GitHub" => @source_url,
+        "Changelog" => "#{@source_url}/blob/main/core/ground_plane_contracts/CHANGELOG.md"
+      },
+      files: ~w(.formatter.exs CHANGELOG.md LICENSE README.md guides lib mix.exs)
     ]
   end
 

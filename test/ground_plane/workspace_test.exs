@@ -45,4 +45,12 @@ defmodule GroundPlane.WorkspaceTest do
       refute Keyword.has_key?(aliases, alias_name)
     end
   end
+
+  test "root CI verifies both public Weld artifacts explicitly" do
+    ci = MixProject.project()[:aliases][:ci]
+
+    assert "weld.verify --artifact ground_plane_contracts" in ci
+    assert "weld.verify --artifact ground_plane_persistence_policy" in ci
+    refute "weld.verify" in ci
+  end
 end
