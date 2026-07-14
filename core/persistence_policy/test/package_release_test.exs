@@ -46,6 +46,7 @@ defmodule GroundPlane.PersistencePolicy.PackageReleaseTest do
     assert docs[:source_ref] == "ground_plane_persistence_policy-v0.1.0"
     assert docs[:source_url] == "https://github.com/nshkrdotcom/ground_plane"
     assert docs[:logo] == "assets/ground_plane_persistence_policy.svg"
+    assert docs[:assets] == %{"assets" => "assets"}
 
     assert docs[:groups_for_extras] == [
              Overview: ["README.md"],

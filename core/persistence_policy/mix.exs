@@ -43,6 +43,7 @@ defmodule GroundPlane.PersistencePolicy.MixProject do
       source_ref: "ground_plane_persistence_policy-v#{@version}",
       source_url: @source_url,
       logo: "assets/ground_plane_persistence_policy.svg",
+      assets: %{"assets" => "assets"},
       extras: [
         "README.md",
         "CHANGELOG.md",

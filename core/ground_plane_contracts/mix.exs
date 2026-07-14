@@ -50,6 +50,7 @@ defmodule GroundPlane.Contracts.MixProject do
       source_ref: "ground_plane_contracts-v#{@version}",
       source_url: @source_url,
       logo: "assets/ground_plane_contracts.svg",
+      assets: %{"assets" => "assets"},
       extras: [
         "README.md",
         "CHANGELOG.md",
