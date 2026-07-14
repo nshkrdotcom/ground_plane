@@ -6,6 +6,7 @@ defmodule GroundPlane.Contracts.PackageReleaseTest do
     "CHANGELOG.md",
     "LICENSE",
     "README.md",
+    "assets/ground_plane_contracts.svg",
     "guides/installation.md",
     "guides/ownership.md"
   ]
@@ -33,7 +34,7 @@ defmodule GroundPlane.Contracts.PackageReleaseTest do
   test "package allowlist contains only package-owned release surfaces" do
     files = Mix.Project.config() |> Keyword.fetch!(:package) |> Keyword.fetch!(:files)
 
-    assert files == ~w(.formatter.exs CHANGELOG.md LICENSE README.md guides lib mix.exs)
+    assert files == ~w(.formatter.exs CHANGELOG.md LICENSE README.md assets guides lib mix.exs)
     assert Enum.all?(@forbidden_entries, &(&1 not in files))
     assert Enum.all?(@required_files, &File.regular?/1)
   end
@@ -44,6 +45,13 @@ defmodule GroundPlane.Contracts.PackageReleaseTest do
     assert docs[:main] == "readme"
     assert docs[:source_ref] == "ground_plane_contracts-v0.1.0"
     assert docs[:source_url] == "https://github.com/nshkrdotcom/ground_plane"
+    assert docs[:logo] == "assets/ground_plane_contracts.svg"
+
+    assert docs[:groups_for_extras] == [
+             Overview: ["README.md"],
+             Guides: ["guides/installation.md", "guides/ownership.md"],
+             Release: ["CHANGELOG.md", "LICENSE"]
+           ]
 
     assert Enum.sort(docs[:extras]) ==
              Enum.sort([
@@ -53,5 +61,21 @@ defmodule GroundPlane.Contracts.PackageReleaseTest do
                "guides/installation.md",
                "guides/ownership.md"
              ])
+  end
+
+  test "release presentation is package-local and branded" do
+    readme = File.read!("README.md")
+    license = File.read!("LICENSE")
+    changelog = File.read!("CHANGELOG.md")
+    logo = File.read!("assets/ground_plane_contracts.svg")
+
+    assert readme =~ ~s(src="assets/ground_plane_contracts.svg")
+    assert readme =~ ~s(width="200" height="200")
+    assert readme =~ "https://github.com/nshkrdotcom/ground_plane"
+    assert readme =~ "license-MIT"
+    assert license =~ "Copyright (c) 2026 nshkrdotcom"
+    assert changelog == "# Changelog\n\n## 0.1.0 - 2026-07-13\n\n- Initial release.\n"
+    assert logo =~ ~s(viewBox="0 0 200 200")
+    assert logo =~ ~s(width="200" height="200")
   end
 end

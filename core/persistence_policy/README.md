@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="assets/ground_plane_persistence_policy.svg" alt="GroundPlane Persistence Policy" width="200" height="200" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/nshkrdotcom/ground_plane"><img src="https://img.shields.io/badge/github-nshkrdotcom%2Fground__plane-18181b?logo=github" alt="GitHub" /></a>
+  <a href="https://github.com/nshkrdotcom/ground_plane/blob/main/core/persistence_policy/LICENSE"><img src="https://img.shields.io/badge/license-MIT-0f766e" alt="MIT License" /></a>
+</p>
+
 # GroundPlane Persistence Policy
 
 Pure persistence profile, tier, capture-level, store-set, partition, and debug

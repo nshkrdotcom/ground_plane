@@ -42,12 +42,18 @@ defmodule GroundPlane.PersistencePolicy.MixProject do
       main: "readme",
       source_ref: "ground_plane_persistence_policy-v#{@version}",
       source_url: @source_url,
+      logo: "assets/ground_plane_persistence_policy.svg",
       extras: [
         "README.md",
         "CHANGELOG.md",
         "LICENSE",
         "guides/installation.md",
         "guides/ownership.md"
+      ],
+      groups_for_extras: [
+        Overview: ["README.md"],
+        Guides: ["guides/installation.md", "guides/ownership.md"],
+        Release: ["CHANGELOG.md", "LICENSE"]
       ]
     ]
   end
@@ -61,7 +67,7 @@ defmodule GroundPlane.PersistencePolicy.MixProject do
         "GitHub" => @source_url,
         "Changelog" => "#{@source_url}/blob/main/core/persistence_policy/CHANGELOG.md"
       },
-      files: ~w(.formatter.exs CHANGELOG.md LICENSE README.md guides lib mix.exs)
+      files: ~w(.formatter.exs CHANGELOG.md LICENSE README.md assets guides lib mix.exs)
     ]
   end
 end

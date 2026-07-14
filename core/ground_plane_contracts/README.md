@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="assets/ground_plane_contracts.svg" alt="GroundPlane Contracts" width="200" height="200" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/nshkrdotcom/ground_plane"><img src="https://img.shields.io/badge/github-nshkrdotcom%2Fground__plane-18181b?logo=github" alt="GitHub" /></a>
+  <a href="https://github.com/nshkrdotcom/ground_plane/blob/main/core/ground_plane_contracts/LICENSE"><img src="https://img.shields.io/badge/license-MIT-2563eb" alt="MIT License" /></a>
+</p>
+
 # GroundPlane Contracts
 
 Pure shared lower contract helpers for ids, repository refs, artifact refs,

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" role="img" aria-labelledby="title desc">
+  <title id="title">GroundPlane Contracts</title>
+  <desc id="desc">A balanced hexagonal contract network with a signed boundary envelope.</desc>
+  <defs>
+    <clipPath id="hex-clip">
+      <polygon points="100,6 181,53 181,147 100,194 19,147 19,53" />
+    </clipPath>
+    <linearGradient id="field" x1="31" y1="22" x2="169" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f172a" />
+      <stop offset="0.5" stop-color="#172554" />
+      <stop offset="1" stop-color="#082f49" />
+    </linearGradient>
+    <linearGradient id="edge" x1="28" y1="35" x2="172" y2="165" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60a5fa" />
+      <stop offset="0.5" stop-color="#818cf8" />
+      <stop offset="1" stop-color="#22d3ee" />
+    </linearGradient>
+    <linearGradient id="seal" x1="74" y1="70" x2="127" y2="132" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8" />
+      <stop offset="1" stop-color="#6366f1" />
+    </linearGradient>
+    <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M16 0H0V16" fill="none" stroke="#93c5fd" stroke-opacity="0.08" stroke-width="0.8" />
+    </pattern>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.2" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+
+  <g clip-path="url(#hex-clip)">
+    <polygon points="100,6 181,53 181,147 100,194 19,147 19,53" fill="url(#field)" />
+    <path d="M0 0H200V200H0Z" fill="url(#grid)" />
+    <circle cx="100" cy="100" r="66" fill="none" stroke="#93c5fd" stroke-opacity="0.12" />
+    <circle cx="100" cy="100" r="52" fill="none" stroke="#22d3ee" stroke-opacity="0.12" stroke-dasharray="3 7" />
+
+    <g stroke-linecap="round">
+      <path d="M56 62L78 82M144 62L122 82M48 112L74 107M152 112L126 107M68 151L84 128M132 151L116 128" stroke="#38bdf8" stroke-opacity="0.52" stroke-width="2" />
+      <path d="M56 62L78 82M144 62L122 82M48 112L74 107M152 112L126 107M68 151L84 128M132 151L116 128" stroke="#dbeafe" stroke-opacity="0.3" stroke-width="0.7" />
+    </g>
+
+    <g fill="#0f172a" stroke="url(#edge)" stroke-width="2">
+      <circle cx="52" cy="58" r="7" />
+      <circle cx="148" cy="58" r="7" />
+      <circle cx="43" cy="114" r="7" />
+      <circle cx="157" cy="114" r="7" />
+      <circle cx="65" cy="157" r="7" />
+      <circle cx="135" cy="157" r="7" />
+    </g>
+    <g fill="#bae6fd">
+      <circle cx="52" cy="58" r="2" /><circle cx="148" cy="58" r="2" />
+      <circle cx="43" cy="114" r="2" /><circle cx="157" cy="114" r="2" />
+      <circle cx="65" cy="157" r="2" /><circle cx="135" cy="157" r="2" />
+    </g>
+
+    <g filter="url(#glow)">
+      <path d="M72 78L100 64L128 78V113L100 135L72 113Z" fill="#071426" stroke="url(#edge)" stroke-width="2.4" />
+      <path d="M77 82L100 96L123 82" fill="none" stroke="#7dd3fc" stroke-width="2" />
+      <path d="M77 112L92 101M123 112L108 101" fill="none" stroke="#4f46e5" stroke-width="1.4" />
+      <path d="M92 101H108V118L100 124L92 118Z" fill="url(#seal)" stroke="#c7d2fe" stroke-width="1" />
+      <path d="M96 108L99 111L105 105" fill="none" stroke="#f8fafc" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+
+    <path d="M34 84H49M151 84H166M84 43V55M116 43V55M84 145V158M116 145V158" stroke="#67e8f9" stroke-opacity="0.45" stroke-width="1.2" stroke-dasharray="2 4" />
+  </g>
+
+  <polygon points="100,6 181,53 181,147 100,194 19,147 19,53" fill="none" stroke="url(#edge)" stroke-width="3" stroke-linejoin="round" />
+  <polygon points="100,14 174,57 174,143 100,186 26,143 26,57" fill="none" stroke="#dbeafe" stroke-opacity="0.18" />
+</svg>
